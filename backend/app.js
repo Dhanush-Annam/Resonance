@@ -15,6 +15,9 @@ app.use(
 // AUTH ROUTES
 app.use('/api/auth', require('./routes/authRoutes'));
 
+// TRACK ROUTES
+app.use('/api/tracks', require('./routes/trackRoutes'));
+
 app.get('/api/profile', protect, (req, res) => {
   res.json({
     message: 'Access granted',
