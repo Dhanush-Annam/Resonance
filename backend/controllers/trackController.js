@@ -1,5 +1,6 @@
 const Track = require('../models/Track');
 const { validationResult } = require('express-validator');
+const User = require('../models/User');
 
 // ARTIST: Upload metadata
 exports.createTrack = async (req, res) => {
@@ -127,5 +128,60 @@ exports.getApprovedTrackById = async (req, res) => {
     res.json(track);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch track' });
+  }
+};
+
+// PUBLIC: Search tracks
+exports.searchTracks = async (req, res) => {
+  try {
+    const { q, page = 1, limit = 10 } = req.query;
+
+    if (!q) {
+      return res.status(400).json({
+        message: 'Search query is required'
+      });
+    }
+
+    const pageNumber = parseInt(page);
+    const pageSize = parseInt(limit);
+    const skip = (pageNumber - 1) * pageSize;
+
+    // Find matching artists by username
+    const matchingArtists = await User.find({
+      username: { $regex: q, $options: 'i' }
+    }).select('_id');
+
+    const artistIds = matchingArtists.map(a => a._id);
+
+    const searchQuery = {
+      status: 'approved',
+      $or: [
+        { title: { $regex: q, $options: 'i' } },
+        { genre: { $regex: q, $options: 'i' } },
+        { artist: { $in: artistIds } }
+      ]
+    };
+
+    // Fetch paginated results
+    const tracks = await Track.find(searchQuery)
+      .populate('artist', 'username')
+      .select('title genre audioUrl coverUrl artist createdAt')
+      .skip(skip)
+      .limit(pageSize)
+      .sort({ createdAt: -1 });
+
+    // Total count
+    const total = await Track.countDocuments(searchQuery);
+
+    res.json({
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / pageSize),
+      results: tracks
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Search failed'
+    });
   }
 };
