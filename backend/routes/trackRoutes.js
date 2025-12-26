@@ -5,13 +5,20 @@ const {
   createTrack,
   getPendingTracks,
   approveTrack,
-  rejectTrack
+  rejectTrack,
+  getApprovedTracks,
+  getApprovedTrackById
 } = require('../controllers/trackController');
 
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 const uploadAudio = require('../middleware/uploadMiddleware');
 const { uploadAudio: uploadAudioController } = require('../controllers/trackController');
+
+// PUBLIC ROUTES
+router.get('/public', getApprovedTracks);
+router.get('/public/:id', getApprovedTrackById);
+
 
 // ARTIST
 router.post('/', protect, authorize('artist'), createTrack);

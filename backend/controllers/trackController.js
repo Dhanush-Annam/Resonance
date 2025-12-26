@@ -96,3 +96,34 @@ exports.rejectTrack = async (req, res) => {
 
   res.json({ message: 'Track rejected' });
 };
+
+// PUBLIC: All approved tracks are visible
+exports.getApprovedTracks = async (req, res) => {
+  try {
+    const tracks = await Track.find({ status: 'approved' })
+      .populate('artist', 'username')
+      .select('title genre audioUrl coverUrl artist createdAt');
+
+    res.json(tracks);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch tracks' });
+  }
+};
+
+// PUBLIC: Get single approved track by ID
+exports.getApprovedTrackById = async (req, res) => {
+  try {
+    const track = await Track.findOne({
+      _id: req.params.id,
+      status: 'approved'
+    }).populate('artist', 'username');
+
+    if (!track) {
+      return res.status(404).json({ message: 'Track not found' });
+    }
+
+    res.json(track);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch track' });
+  }
+};
