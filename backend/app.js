@@ -5,6 +5,27 @@ const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
 const helmet = require('helmet');
 app.use(helmet());
 app.use(express.json());
+const cors = require('cors');
+
+const allowedOrigins = [
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:3000'  // optional fallback
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (Postman, curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 // API LIMITER
 app.use('/api', apiLimiter);
