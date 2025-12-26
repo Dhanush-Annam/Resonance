@@ -4,6 +4,15 @@ const { protect, authorize } = require('./middleware/authMiddleware');
 
 app.use(express.json());
 
+// ADMIN ROUTES
+app.use(
+  '/api/admin',
+  protect,
+  authorize('admin'),
+  require('./routes/adminRoutes')
+);
+
+// AUTH ROUTES
 app.use('/api/auth', require('./routes/authRoutes'));
 
 app.get('/api/profile', protect, (req, res) => {
