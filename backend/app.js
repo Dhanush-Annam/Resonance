@@ -1,8 +1,16 @@
 const express = require('express');
 const app = express();
 const { protect, authorize } = require('./middleware/authMiddleware');
-
+const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
+const helmet = require('helmet');
+app.use(helmet());
 app.use(express.json());
+
+// API LIMITER
+app.use('/api', apiLimiter);
+
+// AUTHENTICATION LIMITER
+app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 
 // ADMIN ROUTES
 app.use(

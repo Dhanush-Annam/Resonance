@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
+const { body } = require('express-validator');
+router.post(
+  '/',
+  protect,
+  authorize('artist'),
+  [
+    body('title').trim().notEmpty(),
+    body('genre').trim().notEmpty()
+  ],
+  createTrack
+);
+
 const {
   createTrack,
   getPendingTracks,

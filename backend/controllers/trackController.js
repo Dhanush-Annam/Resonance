@@ -1,13 +1,15 @@
 const Track = require('../models/Track');
+const { validationResult } = require('express-validator');
 
 // ARTIST: Upload metadata
 exports.createTrack = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  
   try {
     const { title, genre } = req.body;
-
-    if (!title || !genre) {
-      return res.status(400).json({ message: 'Title and genre are required' });
-    }
 
     const track = await Track.create({
       title,
