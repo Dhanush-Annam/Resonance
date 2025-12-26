@@ -3,8 +3,10 @@ const app = express();
 
 app.use(express.json());
 
+app.use('/api/auth', require('./routes/authRoutes'));
+
 app.get('/', (req, res) => {
-  res.send('Hello from the backend server!');
+  res.send('Resonance API Running');
 });
 
 module.exports = app;
