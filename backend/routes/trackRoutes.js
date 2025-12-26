@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const {
   createTrack,
   getPendingTracks,
@@ -9,8 +10,18 @@ const {
 
 const { protect, authorize } = require('../middleware/authMiddleware');
 
+const uploadAudio = require('../middleware/uploadMiddleware');
+const { uploadAudio: uploadAudioController } = require('../controllers/trackController');
+
 // ARTIST
 router.post('/', protect, authorize('artist'), createTrack);
+router.post(
+  '/:id/audio',
+  protect,
+  authorize('artist'),
+  uploadAudio.single('audio'),
+  uploadAudioController
+);
 
 // ADMIN
 router.get('/pending', protect, authorize('admin'), getPendingTracks);
