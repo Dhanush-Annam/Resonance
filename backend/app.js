@@ -11,24 +11,10 @@ const { protect, authorize } = require('./middleware/authMiddleware')
 app.use(helmet())
 app.use(express.json())
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://resonance-liart.vercel.app'
-]
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
-    credentials: true
-  })
-)
+app.use(cors({
+  origin: true,
+  credentials: true
+}))
 
 // ROUTES
 app.use('/api/auth', require('./routes/authRoutes'))
