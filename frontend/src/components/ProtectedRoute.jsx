@@ -1,7 +1,7 @@
 import { useAuth } from '../context/AuthContext'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
-export default function ProtectedRoute({ children, roles }) {
+export default function ProtectedRoute({ roles }) {
   const { user, loading } = useAuth()
   const location = useLocation()
 
@@ -15,14 +15,13 @@ export default function ProtectedRoute({ children, roles }) {
 
   // Not logged in
   if (!user) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
   // Role not allowed
   if (roles && !roles.includes(user.role)) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />
-
+    return <Navigate to="/" replace />
   }
 
-  return children
+  return <Outlet /> 
 }

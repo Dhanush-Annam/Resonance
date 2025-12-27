@@ -21,7 +21,7 @@ const {
 router.post(
   '/',
   protect,
-  authorize('artist'),
+  authorize('artist', 'admin'),
   [
     body('title').trim().notEmpty(),
     body('genre').trim().notEmpty()

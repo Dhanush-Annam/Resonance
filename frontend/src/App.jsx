@@ -10,7 +10,7 @@ import Register from './pages/Register'
 import ProtectedRoute from './components/ProtectedRoute'
 import ArtistDashboard from './pages/ArtistDashboard'
 import AdminDashboard from './pages/AdminDashboard'
-
+import AdminCreateTrack from './pages/AdminCreateTrack'
 
 function App() {
   const [currentTrack, setCurrentTrack] = useState(null)
@@ -21,6 +21,7 @@ function App() {
         <Sidebar />
 
         <Routes>
+          {/* Public */}
           <Route
             path="/"
             element={
@@ -30,6 +31,7 @@ function App() {
               />
             }
           />
+
           <Route
             path="/search"
             element={
@@ -39,25 +41,24 @@ function App() {
               />
             }
           />
+
           <Route path="/library" element={<Library />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+  {/* Artist protected */}
+  <Route element={<ProtectedRoute roles={['artist']} />}>
+    <Route path="/artist" element={<ArtistDashboard />} />
+  </Route>
+
+
+          {/* Admin (nested & protected) */}
           <Route
-            path="/artist"
-            element={
-              <ProtectedRoute roles={['artist']}>
-                <ArtistDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+            element={<ProtectedRoute roles={['admin']} />}
+          >
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/create" element={<AdminCreateTrack />} />
+          </Route>
         </Routes>
       </div>
 

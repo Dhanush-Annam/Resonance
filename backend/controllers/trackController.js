@@ -140,19 +140,27 @@ exports.approveTrack = async (req, res) => {
 
 // ADMIN: Reject track
 exports.rejectTrack = async (req, res) => {
-  const { reason } = req.body;
-  const track = await Track.findById(req.params.id);
+  try {
+    const track = await Track.findById(req.params.id)
 
-  if (!track) {
-    return res.status(404).json({ message: 'Track not found' });
+    if (!track) {
+      return res.status(404).json({ message: 'Track not found' })
+    }
+
+    if (track.status !== 'pending') {
+      return res.status(400).json({ message: 'Track already reviewed' })
+    }
+
+    track.status = 'rejected'
+    await track.save()
+
+    res.json({ message: 'Track rejected successfully' })
+  } catch (err) {
+    console.error('Reject error:', err)
+    res.status(500).json({ message: 'Failed to reject track' })
   }
+}
 
-  track.status = 'rejected';
-  track.rejectionReason = reason || 'Not specified';
-  await track.save();
-
-  res.json({ message: 'Track rejected' });
-};
 
 // PUBLIC: All approved tracks are visible
 exports.getApprovedTracks = async (req, res) => {
