@@ -5,7 +5,7 @@ import Pagination from '../components/Pagination'
 
 const LIMIT = 6
 
-export default function Home({ onPlay }) {
+export default function Home({ onPlay, currentTrack }) {
   const [tracks, setTracks] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
@@ -60,7 +60,11 @@ export default function Home({ onPlay }) {
         </p>
       )}
 
-      <TrackList tracks={tracks} onPlay={onPlay} />
+      <TrackList 
+        tracks={tracks}
+        onPlay={onPlay}
+        currentTrack={currentTrack}
+      />
 
       <Pagination
         page={page}

@@ -10,7 +10,10 @@ function App() {
     <div className="h-screen flex flex-col bg-black">
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <Home onPlay={setCurrentTrack} />
+        <Home
+          onPlay={setCurrentTrack}
+          currentTrack={currentTrack}
+        />
       </div>
 
       <PlayerBar currentTrack={currentTrack} />
