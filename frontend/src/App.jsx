@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import PlayerBar from './components/PlayerBar'
 import Home from './pages/Home'
@@ -14,11 +15,14 @@ import AdminCreateTrack from './pages/AdminCreateTrack'
 
 function App() {
   const [currentTrack, setCurrentTrack] = useState(null)
+  const location = useLocation()
+  const hideSidebarRoutes = ['/login', '/register']
+  const hideSidebar = hideSidebarRoutes.includes(location.pathname)
 
   return (
     <div className="h-screen flex flex-col bg-black">
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        {!hideSidebar && <Sidebar />}
 
         <Routes>
           {/* Public */}
@@ -46,10 +50,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-  {/* Artist protected */}
-  <Route element={<ProtectedRoute roles={['artist']} />}>
-    <Route path="/artist" element={<ArtistDashboard />} />
-  </Route>
+          {/* Artist protected */}
+          <Route element={<ProtectedRoute roles={['artist']} />}>
+            <Route path="/artist" element={<ArtistDashboard />} />
+          </Route>
 
 
           {/* Admin (nested & protected) */}
@@ -62,7 +66,7 @@ function App() {
         </Routes>
       </div>
 
-      <PlayerBar currentTrack={currentTrack} />
+      {!hideSidebar && <PlayerBar currentTrack={currentTrack} />}
     </div>
   )
 }

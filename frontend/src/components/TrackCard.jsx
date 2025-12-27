@@ -9,6 +9,11 @@ export default function TrackCard({ track, onPlay, isActive }) {
           : 'bg-zinc-800 hover:bg-zinc-700'}
       `}
     >
+      <img
+  src={track.coverUrl || '/public/vite.svg'}
+  className="w-full h-40 object-cover rounded"
+/>
+
       <h3 className="font-semibold">{track.title}</h3>
       <p className="text-sm opacity-80">
         {track.artist.username} • {track.genre}
