@@ -7,10 +7,14 @@ app.use(helmet());
 app.use(express.json());
 const cors = require('cors');
 
-const allowedOrigins = [
-  'http://localhost:5173', // Vite dev server
-  'http://localhost:3000'  // optional fallback
-];
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://resonance-liart.vercel.app/'
+  ],
+  credentials: true
+}))
+
 
 app.use(cors({
   origin: function (origin, callback) {
