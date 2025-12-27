@@ -1,30 +1,46 @@
 import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
+import Pagination from '../components/Pagination'
+
+const LIMIT = 6
 
 export default function Home({ onPlay }) {
   const [tracks, setTracks] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(true)
 
       const endpoint = searchTerm
-        ? `/api/tracks/search?q=${encodeURIComponent(searchTerm)}`
-        : `/api/tracks/public`
+        ? `/api/tracks/search?q=${encodeURIComponent(searchTerm)}&page=${page}&limit=${LIMIT}`
+        : `/api/tracks/public?page=${page}&limit=${LIMIT}`
 
       fetch(`${import.meta.env.VITE_API_URL}${endpoint}`)
         .then(res => res.json())
         .then(data => {
-          setTracks(data.results ?? data)
+          if (searchTerm) {
+            setTracks(data.results)
+            setTotalPages(data.totalPages)
+          } else {
+            setTracks(data)
+            setTotalPages(1) 
+          }
           setLoading(false)
         })
         .catch(() => setLoading(false))
     }, 1000) // 1 second debounce
 
     return () => clearTimeout(timer)
+  }, [searchTerm, page])
+
+  useEffect(() => {
+    setPage(1)
   }, [searchTerm])
 
   return (
@@ -45,6 +61,14 @@ export default function Home({ onPlay }) {
       )}
 
       <TrackList tracks={tracks} onPlay={onPlay} />
+
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPrev={() => setPage(p => Math.max(1, p - 1))}
+        onNext={() => setPage(p => Math.min(totalPages, p + 1))}
+      />
+
     </div>
   )
 }
