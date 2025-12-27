@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-app.set('trust proxy', 1)
+app.set('trust proxy', true)
 
 const cors = require('cors')
 const helmet = require('helmet')
@@ -33,9 +33,13 @@ app.use(
     credentials: true
   })
 )
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' })
+})
+
 
 // General API limiter
-app.use('/api', apiLimiter)
+// app.use('/api', apiLimiter)
 
 // Auth-specific limiter
 app.use('/api/auth', authLimiter)

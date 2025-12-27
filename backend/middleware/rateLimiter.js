@@ -1,15 +1,23 @@
-const rateLimit = require('express-rate-limit');
+const rateLimit = require('express-rate-limit')
 
-// API limiter
-exports.apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Too many requests, please try again later'
-});
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for'] || req.ip
+  }
+})
 
-// Authentication limiter
-exports.authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
-  message: 'Too many authentication attempts, please try again later'
-});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for'] || req.ip
+  }
+})
+
+module.exports = { apiLimiter, authLimiter }
