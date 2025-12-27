@@ -2,7 +2,7 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('../config/cloudinary');
 
-const storage = new CloudinaryStorage({
+const audiostorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'resonance/audio',
@@ -12,7 +12,7 @@ const storage = new CloudinaryStorage({
 });
 
 const uploadAudio = multer({
-  storage,
+  audiostorage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('audio/')) {
@@ -41,5 +41,7 @@ const uploadCover = multer({
   }
 })
 
-module.exports = uploadCover
-module.exports = uploadAudio;
+module.exports = {
+  uploadAudio,
+  uploadCover,
+}

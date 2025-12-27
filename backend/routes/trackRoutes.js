@@ -3,8 +3,8 @@ const router = express.Router();
 
 const { body } = require('express-validator');
 const { protect, authorize } = require('../middleware/authMiddleware');
-const uploadAudio = require('../middleware/uploadMiddleware');
-const uploadCover = require('../middleware/uploadMiddleware');
+const { uploadAudio, uploadCover } = require('../middleware/uploadMiddleware');
+
 const {
   createTrack,
   getPendingTracks,
