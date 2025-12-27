@@ -35,20 +35,31 @@ export default function AdminDashboard() {
   }
 
   const reject = async (id) => {
+    const reason = prompt('Enter rejection reason (optional):')
+
     await fetch(
       `${import.meta.env.VITE_API_URL}/api/tracks/${id}/reject`,
       {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
+        body: JSON.stringify({ reason })
       }
     )
+
     fetchPending()
   }
 
   return (
     <div className="p-6">
+      {tracks.length === 0 && (
+        <p className="text-gray-400 mt-4">
+          No pending tracks 🎉
+        </p>
+      )}
+
       <h1 className="text-2xl font-bold mb-4">Pending Tracks</h1>
 
       <div className="grid grid-cols-2 gap-4">
@@ -57,11 +68,12 @@ export default function AdminDashboard() {
             {/* COVER */}
             {t.coverUrl ? (
               <img
+                key={t._id + t.coverUrl}
                 src={t.coverUrl}
                 className="h-40 w-full object-cover rounded"
               />
             ) : (
-              <UploadCoverButton track={t} onSuccess={fetchPending} />
+              <UploadCoverButton track={t} onUploaded={fetchPending} />
             )}
 
             <h3 className="mt-2 font-semibold">{t.title}</h3>
@@ -69,23 +81,27 @@ export default function AdminDashboard() {
 
             {/* AUDIO */}
             {t.audioUrl ? (
-              <audio controls className="w-full mt-2">
+              <audio
+                key={t._id + t.audioUrl}
+                controls
+                className="w-full mt-2"
+              >
                 <source src={t.audioUrl} />
               </audio>
             ) : (
-              <UploadAudioButton track={t} onSuccess={fetchPending} />
+              <UploadAudioButton track={t} onUploaded={fetchPending} />
             )}
+
 
             {/* ACTIONS */}
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => approve(t._id)}
                 disabled={!t.audioUrl}
-                className={`px-3 py-1 rounded ${
-                  t.audioUrl
-                    ? 'bg-green-600'
-                    : 'bg-gray-600 cursor-not-allowed'
-                }`}
+                className={`px-3 py-1 rounded ${t.audioUrl
+                  ? 'bg-green-600'
+                  : 'bg-gray-600 cursor-not-allowed'
+                  }`}
               >
                 Approve
               </button>

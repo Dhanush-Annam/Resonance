@@ -69,6 +69,15 @@ export default function Sidebar() {
             🛡 Admin Dashboard
           </NavLink>
         )}
+        {user?.role === 'admin' && (
+          <NavLink
+            to="/admin/create"
+            className="text-gray-300 hover:text-white"
+          >
+            ➕ Add Track
+          </NavLink>
+        )}
+
       </nav>
     </div>
   )

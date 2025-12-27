@@ -33,7 +33,15 @@ export default function ArtistTrackCard({ track, onUpdated }) {
         className={`inline-block text-xs px-2 py-1 rounded mt-2 ${statusColors[track.status]}`}
       >
         {track.status.toUpperCase()}
+        
       </span>
+      {track.status === 'rejected' && (
+  <p className="text-red-400 text-sm mt-1">
+    Rejected: {track.rejectionReason || 'No reason provided'}
+  </p>
+)}
+
+      
 
       {/* ACTIONS */}
       <div className="mt-4 space-y-2">
