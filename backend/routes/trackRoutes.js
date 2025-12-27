@@ -15,7 +15,8 @@ const {
   uploadAudio: uploadAudioController,
   searchTracks,
   getMyTracks,
-  uploadCoverImage
+  uploadCoverImage,
+  deleteTrack
 } = require('../controllers/trackController');
 
 router.post(
@@ -57,6 +58,13 @@ router.post(
   uploadAudio.single('audio'),
   uploadAudioController
 );
+router.delete(
+  '/:id',
+  protect,
+  authorize('artist', 'admin'),
+  deleteTrack
+)
+
 
 // ADMIN
 router.get('/pending', protect, authorize('admin'), getPendingTracks);

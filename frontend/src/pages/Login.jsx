@@ -28,6 +28,8 @@ export default function Login() {
     )
 
     const data = await res.json()
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('role', data.user.role)
 
     if (!res.ok) {
       setError(data.message || 'Login failed')

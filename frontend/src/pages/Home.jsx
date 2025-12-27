@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Header from '../components/Header'
+// import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import Pagination from '../components/Pagination'
 
@@ -9,9 +9,28 @@ export default function Home({ onPlay, currentTrack }) {
   const [tracks, setTracks] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
+  const role = localStorage.getItem('role')
 
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+
+  const handleAdminDelete = async (id) => {
+    if (!confirm('Admin: Delete this track permanently?')) return
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/tracks/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    )
+
+    if (res.ok) {
+      setTracks(prev => prev.filter(track => track._id !== id))
+    }
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,7 +48,7 @@ export default function Home({ onPlay, currentTrack }) {
             setTotalPages(data.totalPages)
           } else {
             setTracks(data)
-            setTotalPages(1) 
+            setTotalPages(1)
           }
           setLoading(false)
         })
@@ -60,10 +79,12 @@ export default function Home({ onPlay, currentTrack }) {
         </p>
       )}
 
-      <TrackList 
+      <TrackList
         tracks={tracks}
         onPlay={onPlay}
         currentTrack={currentTrack}
+        onDelete={handleAdminDelete}
+        role={role}
       />
 
       <Pagination

@@ -23,6 +23,28 @@ export default function ArtistDashboard() {
     fetchTracks()
   }, [])
 
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this track?')) return
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/tracks/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    )
+
+    if (res.ok) {
+
+      setTracks(prev => prev.filter(track => track._id !== id))
+    } else {
+      alert('Delete failed')
+    }
+  }
+
+
   return (
     <div className="flex-1 bg-zinc-900 text-white p-6 overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
@@ -46,6 +68,7 @@ export default function ArtistDashboard() {
             key={track._id}
             track={track}
             onUpdated={fetchTracks}
+            onDelete={handleDelete}
           />
         ))}
       </div>

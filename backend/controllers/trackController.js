@@ -247,3 +247,36 @@ exports.searchTracks = async (req, res) => {
     });
   }
 };
+
+// ARTIST + ADMIN: Delete track
+exports.deleteTrack = async (req, res) => {
+  try {
+    const track = await Track.findById(req.params.id)
+
+    if (!track) {
+      return res.status(404).json({ message: 'Track not found' })
+    }
+
+    const isAdmin = req.user.role === 'admin'
+    const isOwner = track.artist.toString() === req.user._id.toString()
+
+    // Artist can delete only their own track
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    // Optional safety: prevent artist from deleting approved tracks
+    if (!isAdmin && track.status === 'approved') {
+      return res.status(400).json({
+        message: 'Approved tracks cannot be deleted by artist'
+      })
+    }
+
+    await track.deleteOne()
+
+    res.json({ message: 'Track deleted successfully' })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Failed to delete track' })
+  }
+}
