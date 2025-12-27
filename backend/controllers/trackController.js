@@ -27,6 +27,18 @@ exports.createTrack = async (req, res) => {
   }
 };
 
+// ARTIST: Fetch Tracks
+exports.getMyTracks = async (req, res) => {
+  try {
+    const tracks = await Track.find({ artist: req.user._id })
+      .sort({ createdAt: -1 })
+
+    res.json(tracks)
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch tracks' })
+  }
+}
+
 //ARTIST: Upload audio
 exports.uploadAudio = async (req, res) => {
   const track = await Track.findById(req.params.id);

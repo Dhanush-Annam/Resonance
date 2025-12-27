@@ -12,7 +12,8 @@ const {
   getApprovedTracks,
   getApprovedTrackById,
   uploadAudio: uploadAudioController,
-  searchTracks
+  searchTracks,
+  getMyTracks
 } = require('../controllers/trackController');
 
 router.post(
@@ -33,6 +34,12 @@ router.get('/search', searchTracks);
 
 // ARTIST
 router.post('/', protect, authorize('artist'), createTrack);
+router.get(
+  '/my',
+  protect,
+  authorize('artist'),
+  getMyTracks
+)
 router.post(
   '/:id/audio',
   protect,
