@@ -1,4 +1,5 @@
 import UploadAudioButton from './UploadAudioButton'
+import UploadCoverButton from './UploadCoverButton'
 
 export default function ArtistTrackCard({ track, onUpdated }) {
   const statusColors = {
@@ -9,6 +10,22 @@ export default function ArtistTrackCard({ track, onUpdated }) {
 
   return (
     <div className="bg-zinc-800 p-4 rounded-lg">
+      {/* COVER */}
+      <div className="mb-3">
+        {track.coverUrl ? (
+          <img
+            src={track.coverUrl}
+            alt="Cover"
+            className="w-full h-40 object-cover rounded"
+          />
+        ) : (
+          <div className="w-full h-40 bg-zinc-700 rounded flex items-center justify-center text-gray-400 text-sm">
+            No cover
+          </div>
+        )}
+      </div>
+
+      {/* INFO */}
       <h3 className="font-semibold text-lg">{track.title}</h3>
       <p className="text-sm text-gray-400">{track.genre}</p>
 
@@ -18,7 +35,13 @@ export default function ArtistTrackCard({ track, onUpdated }) {
         {track.status.toUpperCase()}
       </span>
 
-      <div className="mt-4">
+      {/* ACTIONS */}
+      <div className="mt-4 space-y-2">
+        <UploadCoverButton
+          track={track}
+          onUploaded={onUpdated}
+        />
+
         <UploadAudioButton
           track={track}
           onUploaded={onUpdated}

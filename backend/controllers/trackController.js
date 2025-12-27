@@ -41,35 +41,45 @@ exports.getMyTracks = async (req, res) => {
 
 //ARTIST: Upload audio
 exports.uploadAudio = async (req, res) => {
-  const track = await Track.findById(req.params.id);
 
-  if (!track) {
-    return res.status(404).json({ message: 'Track not found' });
+  try {
+    const track = await Track.findById(req.params.id)
+
+    if (!track) {
+      return res.status(404).json({ message: 'Track not found' })
+    }
+
+    // ownership check
+    if (track.artist.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    // lock after approval
+    if (track.status === 'approved') {
+      return res
+        .status(400)
+        .json({ message: 'Approved tracks cannot be modified' })
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'Audio file missing' })
+    }
+
+    const audioUrl = req.file.path || req.file.secure_url
+
+    track.audioUrl = audioUrl
+    await track.save()
+
+    res.json({
+      message: 'Audio uploaded successfully',
+      audioUrl,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Audio upload failed' })
   }
-
-  if (track.status === 'approved') {
-  return res.status(400).json({
-    message: 'Approved tracks cannot be modified'
-  });
 }
 
-
-  if (track.artist.toString() !== req.user._id.toString()) {
-    return res.status(403).json({ message: 'Not authorized' });
-  }
-
-  if (!req.file || !req.file.path) {
-    return res.status(400).json({ message: 'Audio file is required' });
-  }
-
-  track.audioUrl = req.file.path;
-  await track.save();
-
-  res.json({
-    message: 'Audio uploaded successfully',
-    audioUrl: track.audioUrl
-  });
-};
 
 //ARTIST: Upload cover image
 exports.uploadCoverImage = async (req, res) => {

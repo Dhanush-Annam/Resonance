@@ -1,33 +1,35 @@
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
+const multer = require('multer')
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
+const cloudinary = require('../config/cloudinary')
 
-const audiostorage = new CloudinaryStorage({
+// AUDIO STORAGE
+const audioStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'resonance/audio',
-    resource_type: 'video',
-    allowed_formats: ['mp3', 'wav', 'ogg']
-  }
-});
+    resource_type: 'auto',
+    allowed_formats: ['mp3', 'wav', 'ogg'],
+  },
+})
 
 const uploadAudio = multer({
-  audiostorage,
+  storage: audioStorage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('audio/')) {
-      cb(new Error('Only audio files allowed'));
+      return cb(new Error('Only audio files allowed'))
     }
-    cb(null, true);
-  }
-});
+    cb(null, true)
+  },
+})
 
+// COVER STORAGE
 const coverStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'resonance/covers',
-    resource_type: 'image'
-  }
+    resource_type: 'image',
+  },
 })
 
 const uploadCover = multer({
@@ -35,10 +37,10 @@ const uploadCover = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image/')) {
-      cb(new Error('Only image files allowed'))
+      return cb(new Error('Only image files allowed'))
     }
     cb(null, true)
-  }
+  },
 })
 
 module.exports = {

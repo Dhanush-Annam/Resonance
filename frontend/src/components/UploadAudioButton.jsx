@@ -30,12 +30,13 @@ export default function UploadAudioButton({ track, onUploaded }) {
 
       const data = await res.json()
 
-      if (!res.ok) {
-        setError(data.message || 'Upload failed')
-      } else {
-        setSuccess(true)
-        onUploaded()
-      }
+if (!res.ok) {
+  const text = await res.text()
+  console.error(text)
+  setError('Upload failed')
+  return
+}
+
     } catch {
       setError('Upload failed')
     } finally {
