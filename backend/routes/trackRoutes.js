@@ -42,17 +42,18 @@ router.get(
   authorize('artist'),
   getMyTracks
 )
+// ARTIST && ADMIN
 router.post(
   '/:id/cover',
   protect,
-  authorize('artist'),
+  authorize('artist', 'admin'),
   uploadCover.single('cover'),
   uploadCoverImage
 )
 router.post(
   '/:id/audio',
   protect,
-  authorize('artist'),
+  authorize('artist', 'admin'),
   uploadAudio.single('audio'),
   uploadAudioController
 );

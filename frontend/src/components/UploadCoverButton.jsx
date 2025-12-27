@@ -28,15 +28,20 @@ export default function UploadCoverButton({ track, onUploaded }) {
         }
       )
 
-      const data = await res.json()
-
       if (!res.ok) {
-        setError(data.message || 'Cover upload failed')
-      } else {
-        setSuccess(true)
-        onUploaded()
+        const text = await res.text()
+        console.error(text)
+        setError('Cover upload failed')
+        return
       }
-    } catch {
+
+      // ✅ SUCCESS
+      setSuccess(true)
+      setError('')
+      onUploaded && onUploaded() // 🔥 refresh parent state
+
+    } catch (err) {
+      console.error(err)
       setError('Cover upload failed')
     } finally {
       setUploading(false)
@@ -55,7 +60,7 @@ export default function UploadCoverButton({ track, onUploaded }) {
     <div className="mt-2">
       {success && (
         <p className="text-xs text-green-400 mb-1">
-          ✔ Cover uploaded
+          ✔ Cover uploaded successfully
         </p>
       )}
 
@@ -82,3 +87,4 @@ export default function UploadCoverButton({ track, onUploaded }) {
     </div>
   )
 }
+

@@ -39,6 +39,7 @@ export default function AdminCreateTrack() {
       }
 
       setTrackId(data._id)
+      navigate('/admin')
     } catch (err) {
       console.error(err)
       alert(err.message)

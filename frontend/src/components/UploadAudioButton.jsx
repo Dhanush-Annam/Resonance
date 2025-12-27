@@ -28,17 +28,21 @@ export default function UploadAudioButton({ track, onUploaded }) {
         }
       )
 
-      const data = await res.json()
+      if (!res.ok) {
+        const text = await res.text()
+        console.error(text)
+        setError('Audio upload failed')
+        return
+      }
 
-if (!res.ok) {
-  const text = await res.text()
-  console.error(text)
-  setError('Upload failed')
-  return
-}
+      // ✅ SUCCESS
+      setSuccess(true)
+      setError('')
+      onUploaded && onUploaded() // 🔥 refresh parent state
 
-    } catch {
-      setError('Upload failed')
+    } catch (err) {
+      console.error(err)
+      setError('Audio upload failed')
     } finally {
       setUploading(false)
     }
@@ -68,7 +72,11 @@ if (!res.ok) {
       )}
 
       <label className="cursor-pointer text-sm bg-zinc-700 hover:bg-zinc-600 px-3 py-2 rounded inline-block">
-        {uploading ? 'Uploading...' : track.audioUrl ? 'Re-upload Audio' : 'Upload Audio'}
+        {uploading
+          ? 'Uploading...'
+          : track.audioUrl
+          ? 'Re-upload Audio'
+          : 'Upload Audio'}
         <input
           type="file"
           accept="audio/*"
@@ -80,4 +88,5 @@ if (!res.ok) {
     </div>
   )
 }
+
 
