@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -26,7 +28,7 @@ export default function Register() {
   }
 
   return (
-    <div className="flex-1 bg-black flex items-center justify-center">
+    <div className="flex-col bg-black flex items-center justify-center w-screen">
       <form
         onSubmit={handleSubmit}
         className="bg-zinc-900 p-6 rounded-lg w-96"
@@ -59,6 +61,16 @@ export default function Register() {
           Register
         </button>
       </form>
+      <p className="text-sm text-gray-400 mt-4 text-center">
+        Already have an account?{' '}
+        <Link
+          to="/login"
+          className="text-green-400 hover:underline"
+        >
+          Login
+        </Link>
+      </p>
+
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import PlayerBar from './components/PlayerBar'
 import Home from './pages/Home'
@@ -21,6 +22,7 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-black">
+      <Header/>
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar />}
 

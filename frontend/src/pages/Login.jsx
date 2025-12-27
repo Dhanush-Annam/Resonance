@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -38,7 +39,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex-1 bg-black flex items-center justify-center">
+    <div className="flex-col bg-black flex items-center justify-center w-screen">
       <form
         onSubmit={handleSubmit}
         className="bg-zinc-900 p-6 rounded-lg w-96"
@@ -69,6 +70,16 @@ export default function Login() {
           Login
         </button>
       </form>
+      <p className="text-sm text-gray-400 mt-4 text-center">
+        Don&apos;t have an account?{' '}
+        <Link
+          to="/register"
+          className="text-green-400 hover:underline"
+        >
+          Register
+        </Link>
+      </p>
+
     </div>
   )
 }

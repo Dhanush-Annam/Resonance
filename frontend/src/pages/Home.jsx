@@ -45,10 +45,10 @@ export default function Home({ onPlay, currentTrack }) {
 
   return (
     <div className="flex-1 bg-zinc-900 text-white overflow-y-auto">
-      <Header
+      {/* <Header
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-      />
+      /> */}
 
       {loading && (
         <p className="text-gray-400 p-4">Searching...</p>
