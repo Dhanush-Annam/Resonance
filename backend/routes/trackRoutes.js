@@ -4,6 +4,7 @@ const router = express.Router();
 const { body } = require('express-validator');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const uploadAudio = require('../middleware/uploadMiddleware');
+const uploadCover = require('../middleware/uploadMiddleware');
 const {
   createTrack,
   getPendingTracks,
@@ -13,7 +14,8 @@ const {
   getApprovedTrackById,
   uploadAudio: uploadAudioController,
   searchTracks,
-  getMyTracks
+  getMyTracks,
+  uploadCoverImage
 } = require('../controllers/trackController');
 
 router.post(
@@ -39,6 +41,13 @@ router.get(
   protect,
   authorize('artist'),
   getMyTracks
+)
+router.post(
+  '/:id/cover',
+  protect,
+  authorize('artist'),
+  uploadCover.single('cover'),
+  uploadCoverImage
 )
 router.post(
   '/:id/audio',

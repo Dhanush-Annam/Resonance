@@ -71,6 +71,38 @@ exports.uploadAudio = async (req, res) => {
   });
 };
 
+//ARTIST: Upload cover image
+exports.uploadCoverImage = async (req, res) => {
+  try {
+    const track = await Track.findById(req.params.id)
+
+    if (!track) {
+      return res.status(404).json({ message: 'Track not found' })
+    }
+
+    // Ownership check
+    if (track.artist.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    // Lock after approval
+    if (track.status === 'approved') {
+      return res.status(400).json({
+        message: 'Approved tracks cannot be modified'
+      })
+    }
+
+    track.coverUrl = req.file.path
+    await track.save()
+
+    res.json({
+      message: 'Cover uploaded successfully',
+      coverUrl: track.coverUrl
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Cover upload failed' })
+  }
+}
 
 // ADMIN: View pending tracks
 exports.getPendingTracks = async (req, res) => {

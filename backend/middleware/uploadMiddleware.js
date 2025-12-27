@@ -22,4 +22,24 @@ const uploadAudio = multer({
   }
 });
 
+const coverStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'resonance/covers',
+    resource_type: 'image'
+  }
+})
+
+const uploadCover = multer({
+  storage: coverStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      cb(new Error('Only image files allowed'))
+    }
+    cb(null, true)
+  }
+})
+
+module.exports = uploadCover
 module.exports = uploadAudio;
