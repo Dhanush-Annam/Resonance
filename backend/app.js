@@ -12,9 +12,13 @@ app.use(helmet())
 app.use(express.json())
 
 app.use(cors({
-  origin: true,
+  origin: [
+    'http://localhost:5173',
+    'https://resonance-liart.vercel.app'
+  ],
   credentials: true
 }))
+
 
 // ROUTES
 app.use('/api/auth', require('./routes/authRoutes'))
