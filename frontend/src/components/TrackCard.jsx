@@ -10,8 +10,8 @@ export default function TrackCard({ track, onPlay, isActive }) {
       `}
     >
       <img
-  src={track.coverUrl || '/public/vite.svg'}
-  className="w-full h-40 object-cover rounded"
+  src={track.coverUrl || '/no-image.jpg'}
+  className="w-full h-80 object-cover rounded"
 />
 
       <h3 className="font-semibold">{track.title}</h3>
