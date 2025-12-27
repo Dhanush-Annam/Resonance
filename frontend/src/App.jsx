@@ -7,6 +7,10 @@ import Search from './pages/Search'
 import Library from './pages/Library'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ProtectedRoute from './components/ProtectedRoute'
+import ArtistDashboard from './pages/ArtistDashboard'
+import AdminDashboard from './pages/AdminDashboard'
+
 
 function App() {
   const [currentTrack, setCurrentTrack] = useState(null)
@@ -38,6 +42,22 @@ function App() {
           <Route path="/library" element={<Library />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/artist"
+            element={
+              <ProtectedRoute roles={['artist']}>
+                <ArtistDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
 

@@ -6,16 +6,23 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    const userData = localStorage.getItem('user')
+useEffect(() => {
+  const token = localStorage.getItem('token')
+  const userData = localStorage.getItem('user')
 
-    if (token && userData) {
+  if (token && userData && userData !== 'undefined') {
+    try {
       setUser(JSON.parse(userData))
+    } catch (error) {
+      console.error('Corrupted auth data, clearing storage')
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
     }
+  }
 
-    setLoading(false)
-  }, [])
+  setLoading(false)
+}, [])
+
 
   const login = (data) => {
     localStorage.setItem('token', data.token)

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useLocation } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -8,6 +9,9 @@ export default function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const { login } = useAuth()
+  const location = useLocation()
+  const from = location.state?.from || '/'
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,7 +34,7 @@ export default function Login() {
     }
 
     login(data)
-    navigate('/')
+    navigate(from)
   }
 
   return (
