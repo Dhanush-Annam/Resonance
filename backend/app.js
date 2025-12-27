@@ -6,6 +6,9 @@ app.set('trust proxy', true)
 const cors = require('cors')
 const helmet = require('helmet')
 
+const { apiLimiter } = require('./middleware/rateLimiter')
+app.use('/api', apiLimiter)
+
 const { protect, authorize } = require('./middleware/authMiddleware')
 
 app.use(helmet())
