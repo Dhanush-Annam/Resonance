@@ -1,9 +1,21 @@
+import { useState } from 'react'
+import Sidebar from './components/Sidebar'
+import PlayerBar from './components/PlayerBar'
+import Home from './pages/Home'
+
 function App() {
+  const [currentTrack, setCurrentTrack] = useState(null)
+
   return (
-    <div className="bg-black h-screen">
-      <h1 className="text-white text-3xl font-bold p-4">Hello, Tailwind!</h1>
+    <div className="h-screen flex flex-col bg-black">
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <Home onPlay={setCurrentTrack} />
+      </div>
+
+      <PlayerBar currentTrack={currentTrack} />
     </div>
   )
 }
-export default App
 
+export default App
