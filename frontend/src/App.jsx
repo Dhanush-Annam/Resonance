@@ -32,6 +32,14 @@ const playNext = () => {
   })
 }
 
+const playPrev = () => {
+  setCurrentIndex(prev => {
+    if (prev === null){return prev;}
+    if (prev - 1 >= 0){return prev - 1;}
+    return prev;
+  })
+}
+
 
   const location = useLocation()
   const hideSidebarRoutes = ['/login', '/register']
@@ -85,7 +93,7 @@ const playNext = () => {
         </Routes>
       </div>
 
-      {!hideSidebar && <PlayerBar currentTrack={currentTrack} onNext={playNext} />}
+      {!hideSidebar && <PlayerBar currentTrack={currentTrack} onNext={playNext} onPrev={playPrev}/>}
     </div>
   )
 }
