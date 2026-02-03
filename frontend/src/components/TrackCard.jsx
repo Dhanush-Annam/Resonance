@@ -1,5 +1,4 @@
 export default function TrackCard({ track, onPlay, isActive, onDelete, role }) {
-  console.log('ROLE IN TRACKCARD:', role)
 
   return (
     <div
