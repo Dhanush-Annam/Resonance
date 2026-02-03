@@ -12,7 +12,7 @@ export default function AdminCreateTrack() {
 
     const title = e.target.title.value
     const genre = e.target.genre.value
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('token')
 
     if (!title || !genre) {
       alert('Title and genre are required')
