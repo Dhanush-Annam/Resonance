@@ -15,9 +15,13 @@ export default function Header() {
   }
   return (
     <div className="h-14 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between px-6">
+      <Link
+        to="/"
+      >
       <h1 className="text-white font-bold text-lg">
         🎧 Resonance
       </h1>
+      </Link>
       {user && (
         <input
           type="text"
