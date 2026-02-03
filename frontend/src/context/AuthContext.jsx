@@ -33,6 +33,7 @@ useEffect(() => {
   const logout = () => {
     sessionStorage.removeItem('token')
     sessionStorage.removeItem('user')
+    sessionStorage.removeItem('role')
     setUser(null)
   }
 
