@@ -25,7 +25,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['user', 'artist', 'admin'],
       default: 'user'
-    }
+    },
+    likedTracks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Track',
+      },
+    ],
   },
   { timestamps: true }
 );
