@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-export default function PlayerBar({ currentTrack }) {
+export default function PlayerBar({ currentTrack, onNext}) {
   const audioRef = useRef(null)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -124,7 +124,11 @@ export default function PlayerBar({ currentTrack }) {
           setDuration(dur)
           setProgress(dur ? (current / dur) * 100 : 0)
         }}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={() => {
+          setIsPlaying(false)
+          onNext?.()
+          }
+        }
         autoPlay
       />
 

@@ -15,7 +15,24 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminCreateTrack from './pages/AdminCreateTrack'
 
 function App() {
-  const [currentTrack, setCurrentTrack] = useState(null)
+  const [queue, setQueue] = useState([])
+  const [currentIndex, setCurrentIndex] = useState(null)
+  const currentTrack = currentIndex !== null ? queue[currentIndex] : null
+
+  const handlePlay = (tracks, index) => {
+  setQueue(tracks)
+  setCurrentIndex(index)
+}
+
+const playNext = () => {
+  setCurrentIndex(prev => {
+    if (prev === null){return prev;}
+    if (prev + 1 < queue.length){return prev + 1;}
+    return prev;
+  })
+}
+
+
   const location = useLocation()
   const hideSidebarRoutes = ['/login', '/register']
   const hideSidebar = hideSidebarRoutes.includes(location.pathname)
@@ -32,7 +49,7 @@ function App() {
             path="/"
             element={
               <Home
-                onPlay={setCurrentTrack}
+                onPlay={handlePlay}
                 currentTrack={currentTrack}
               />
             }
@@ -42,7 +59,7 @@ function App() {
             path="/search"
             element={
               <Search
-                onPlay={setCurrentTrack}
+                onPlay={handlePlay}
                 currentTrack={currentTrack}
               />
             }
@@ -68,7 +85,7 @@ function App() {
         </Routes>
       </div>
 
-      {!hideSidebar && <PlayerBar currentTrack={currentTrack} />}
+      {!hideSidebar && <PlayerBar currentTrack={currentTrack} onNext={playNext} />}
     </div>
   )
 }

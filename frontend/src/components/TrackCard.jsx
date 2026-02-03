@@ -2,7 +2,7 @@ export default function TrackCard({ track, onPlay, isActive, onDelete, role }) {
 
   return (
     <div
-      onClick={() => onPlay(track)}
+      onClick={() => onPlay(track, index)}
       className={`
   relative p-4 rounded-lg cursor-pointer transition
   ${isActive
