@@ -13,6 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ArtistDashboard from './pages/ArtistDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminCreateTrack from './pages/AdminCreateTrack'
+import LikedSongs from './pages/LikedSongs'
 
 function App() {
   const [queue, setQueue] = useState([])
@@ -138,7 +139,17 @@ const toggleLike = async (track) => {
           <Route element={<ProtectedRoute roles={['user', 'artist', 'admin']} />}>
           <Route
             path="/library"
-            element={<Library />}
+            element={<Library likedCount={likedTracks.length}/>}
+          />
+          <Route
+            path="/library/liked"
+            element={
+            <LikedSongs 
+              likedTracks={likedTracks}
+              onPlay={handlePlay}
+              currentTrack={currentTrack}
+            />
+            }
           />
           </Route>
 
