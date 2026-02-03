@@ -22,7 +22,7 @@ export default function UploadCoverButton({ track, onUploaded }) {
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
           },
           body: formData,
         }

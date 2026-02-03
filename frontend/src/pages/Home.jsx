@@ -9,7 +9,7 @@ export default function Home({ onPlay, currentTrack }) {
   const [tracks, setTracks] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
-  const role = localStorage.getItem('role')
+  const role = sessionStorage.getItem('role')
 
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -22,7 +22,7 @@ export default function Home({ onPlay, currentTrack }) {
       {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       }
     )

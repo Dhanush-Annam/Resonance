@@ -10,7 +10,7 @@ export default function AdminDashboard() {
       `${import.meta.env.VITE_API_URL}/api/tracks/pending`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       }
     )
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
       {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       }
     )
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
         },
         body: JSON.stringify({ reason })
       }

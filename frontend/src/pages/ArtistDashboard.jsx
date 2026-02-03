@@ -11,7 +11,7 @@ export default function ArtistDashboard() {
       `${import.meta.env.VITE_API_URL}/api/tracks/my`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       }
     )
@@ -31,7 +31,7 @@ export default function ArtistDashboard() {
       {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       }
     )
