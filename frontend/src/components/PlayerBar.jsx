@@ -66,21 +66,21 @@ export default function PlayerBar({ currentTrack, onNext , onPrev}) {
       <div className="flex flex-col items-center w-1/3">
         <div className="flex items-center gap-4 mb-1">
           <button 
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white bg-green-500"
             onClick={onPrev}
             >
             ⏮
           </button>
 
           <button
-            className="bg-white text-black rounded-full h-8 w-8 flex items-center justify-center"
+            className="bg-green-500 text-black rounded-full h-8 w-8 flex items-center justify-center"
             onClick={togglePlay}
           >
             {isPlaying ? '⏸' : '▶'}
           </button>
 
           <button 
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white bg-green-500"
             onClick={onNext}
             >
             ⏭
