@@ -33,7 +33,9 @@ app.use(
   authorize('admin'),
   require('./routes/adminRoutes')
 )
+app.use('/api/library', require('./routes/libraryRoutes'));
 
+// HEALTH CHECK
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })

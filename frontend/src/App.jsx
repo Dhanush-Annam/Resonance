@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState , useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import Header from './components/Header'
@@ -40,6 +40,66 @@ const playPrev = () => {
   })
 }
 
+const [likedTracks, setLikedTracks] = useState([])
+
+
+useEffect(() => {
+  const fetchLikedSongs = async () => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/library/likes`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+        }
+      )
+
+      if (!res.ok) return
+
+      const data = await res.json()
+      setLikedTracks(data)
+    }
+    catch (err) {
+      console.error('Failed to load liked songs', err)
+    }
+  }
+
+  fetchLikedSongs()
+}, [])
+
+const toggleLike = async (track) => {
+  if (!track?._id) return
+
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/library/likes/${track._id}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      }
+    )
+
+    if (!res.ok) return
+
+    const { liked } = await res.json()
+
+    setLikedTracks(prev => {
+      if (liked) {
+        if (prev.some(i => i._id === track._id)) return prev
+        return [track, ...prev]
+      }
+      else {
+        return prev.filter(i => i._id !== track._id)
+      }
+    })
+  }
+  catch (err) {
+    console.error('Toggle like failed', err)
+  }
+}
 
   const location = useLocation()
   const hideSidebarRoutes = ['/login', '/register']
@@ -93,7 +153,14 @@ const playPrev = () => {
         </Routes>
       </div>
 
-      {!hideSidebar && <PlayerBar currentTrack={currentTrack} onNext={playNext} onPrev={playPrev}/>}
+      {!hideSidebar && 
+      <PlayerBar 
+      currentTrack={currentTrack}
+      onNext={playNext}
+      onPrev={playPrev}
+      likedtrackIds={likedTracks.map(i => i._id)}
+      onToggleLike={toggleLike}
+      />}
     </div>
   )
 }

@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 
-export default function PlayerBar({ currentTrack, onNext , onPrev}) {
+export default function PlayerBar({ currentTrack, onNext , onPrev , likedTrackIds , onToggleLike}) {
   const audioRef = useRef(null)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(0.8)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
+  const isLiked =  currentTrack && likedTrackIds.includes(currentTrack._id)
 
   const togglePlay = () => {
     if (!audioRef.current) return
@@ -59,6 +60,17 @@ export default function PlayerBar({ currentTrack, onNext , onPrev}) {
           <p className="text-xs text-gray-400">
             {currentTrack.artist?.username || 'Unknown Artist'}
           </p>
+        </div>
+        <div>
+          {currentTrack && (
+          <button
+            onClick={() => onToggleLike(currentTrack)}
+            className="ml-3 text-xl"
+            title={isLiked ? 'Unlike' : 'Like'}
+          >
+          {isLiked ? '❤️' : '🤍'}
+          </button>
+          )}
         </div>
       </div>
 
