@@ -166,7 +166,7 @@ const toggleLike = async (track) => {
       currentTrack={currentTrack}
       onNext={playNext}
       onPrev={playPrev}
-      likedtrackIds={likedTracks.map(i => i._id)}
+      likedTrackIds={likedTracks.map(i => i._id)}
       onToggleLike={toggleLike}
       />}
     </div>

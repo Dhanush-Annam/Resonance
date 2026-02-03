@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-export default function PlayerBar({ currentTrack, onNext , onPrev , likedTrackIds , onToggleLike}) {
+export default function PlayerBar({ currentTrack, onNext , onPrev , likedTrackIds=[] , onToggleLike}) {
   const audioRef = useRef(null)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
