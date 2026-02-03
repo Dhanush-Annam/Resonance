@@ -44,6 +44,8 @@ const [likedTracks, setLikedTracks] = useState([])
 
 
 useEffect(() => {
+  const token = sessionStorage.getItem('token');
+  if(!token) return
   const fetchLikedSongs = async () => {
     try {
       const res = await fetch(
@@ -133,7 +135,13 @@ const toggleLike = async (track) => {
             }
           />
 
-          <Route path="/library" element={<Library />} />
+          <Route element={<ProtectedRoute roles={['user', 'artist', 'admin']} />}>
+          <Route
+            path="/library"
+            element={<Library />}
+          />
+          </Route>
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
