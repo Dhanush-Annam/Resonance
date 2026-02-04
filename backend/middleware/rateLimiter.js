@@ -6,7 +6,7 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
-    return req.headers['x-forwarded-for'] || req.ip
+    return rateLimit.ipKeyGenerator(req , res)
   }
 })
 
