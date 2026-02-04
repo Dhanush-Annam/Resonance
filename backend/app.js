@@ -34,6 +34,7 @@ app.use(
   require('./routes/adminRoutes')
 )
 app.use('/api/library', require('./routes/libraryRoutes'));
+app.use('/api/users', require('./routes/userRoutes'))
 
 // HEALTH CHECK
 app.get('/health', (req, res) => {

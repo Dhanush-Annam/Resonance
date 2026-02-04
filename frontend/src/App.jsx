@@ -1,6 +1,5 @@
 import { useState , useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { Routes, Route , useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import PlayerBar from './components/PlayerBar'
@@ -16,6 +15,8 @@ import AdminCreateTrack from './pages/AdminCreateTrack'
 import LikedSongs from './pages/LikedSongs'
 
 function App() {
+
+  // PLAYER STATE
   const [queue, setQueue] = useState([])
   const [currentIndex, setCurrentIndex] = useState(null)
   const currentTrack = currentIndex !== null ? queue[currentIndex] : null
@@ -23,7 +24,7 @@ function App() {
   const handlePlay = (tracks, index) => {
   setQueue(tracks)
   setCurrentIndex(index)
-}
+  }
 
 const playNext = () => {
   setCurrentIndex(prev => {
@@ -41,69 +42,70 @@ const playPrev = () => {
   })
 }
 
+// LIKES STATE
 const [likedTracks, setLikedTracks] = useState([])
+const token = sessionStorage.getItem('token');
 
+// LOAD LIKES
+  useEffect(() => {
+    if (!token) {
+      setLikedTracks([])
+      return
+    }
 
-useEffect(() => {
-  const token = sessionStorage.getItem('token');
-  if(!token) return
-  const fetchLikedSongs = async () => {
+    const fetchLikedSongs = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/library/likes`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        if (!res.ok) return
+        const data = await res.json()
+        setLikedTracks(data)
+      } catch (err) {
+        console.error('Failed to load liked songs', err)
+      }
+    }
+    fetchLikedSongs()
+  }, [token])
+
+  // TOGGLE LIKE
+  const toggleLike = async (track) => {
+    if (!track?._id || !token) return
+
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/library/likes`,
+        `${import.meta.env.VITE_API_URL}/api/library/likes/${track._id}`,
         {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )
-
       if (!res.ok) return
-
-      const data = await res.json()
-      setLikedTracks(data)
+      const { liked } = await res.json()
+      setLikedTracks(prev => {
+        if (liked) {
+        const alreadyLiked = prev.some(t => t._id === track._id)
+        if (alreadyLiked) return prev
+        return [track, ...prev]
+        }
+        else {
+          return prev.filter(t => t._id !== track._id)
+        }
+      })
     }
     catch (err) {
-      console.error('Failed to load liked songs', err)
+      console.error('Toggle like failed', err)
     }
   }
 
-  fetchLikedSongs()
-}, [])
-
-const toggleLike = async (track) => {
-  if (!track?._id) return
-
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/library/likes/${track._id}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-        },
-      }
-    )
-
-    if (!res.ok) return
-
-    const { liked } = await res.json()
-
-    setLikedTracks(prev => {
-      if (liked) {
-        if (prev.some(i => i._id === track._id)) return prev
-        return [track, ...prev]
-      }
-      else {
-        return prev.filter(i => i._id !== track._id)
-      }
-    })
-  }
-  catch (err) {
-    console.error('Toggle like failed', err)
-  }
-}
-
+  // UI
   const location = useLocation()
   const hideSidebarRoutes = ['/login', '/register']
   const hideSidebar = hideSidebarRoutes.includes(location.pathname)
@@ -135,6 +137,8 @@ const toggleLike = async (track) => {
               />
             }
           />
+
+            {/* USER , ARTIST , ADMIN */}
 
           <Route element={<ProtectedRoute roles={['user', 'artist', 'admin']} />}>
           <Route
@@ -172,14 +176,14 @@ const toggleLike = async (track) => {
         </Routes>
       </div>
 
-      {!hideSidebar && 
+      {!hideSidebar && (
       <PlayerBar 
       currentTrack={currentTrack}
       onNext={playNext}
       onPrev={playPrev}
       likedTrackIds={likedTracks.map(i => i._id)}
       onToggleLike={toggleLike}
-      />}
+      />)}
     </div>
   )
 }
