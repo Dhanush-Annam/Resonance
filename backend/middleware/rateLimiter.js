@@ -5,7 +5,7 @@ const apiLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
+  keyGenerator: (req , res) => {
     return rateLimit.ipKeyGenerator(req , res)
   }
 })
