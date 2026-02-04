@@ -1,5 +1,5 @@
-import { useState , useEffect } from 'react'
-import { Routes, Route , useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import PlayerBar from './components/PlayerBar'
@@ -13,6 +13,7 @@ import ArtistDashboard from './pages/ArtistDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminCreateTrack from './pages/AdminCreateTrack'
 import LikedSongs from './pages/LikedSongs'
+import RecentlyPlayed from './pages/RecentlyPlayed'
 
 function App() {
 
@@ -21,32 +22,54 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(null)
   const currentTrack = currentIndex !== null ? queue[currentIndex] : null
 
-  const handlePlay = (tracks, index) => {
-  setQueue(tracks)
-  setCurrentIndex(index)
+  const handlePlay = async (tracks, index) => {
+    setQueue(tracks)
+    setCurrentIndex(index)
+
+    const track = tracks[index]
+    const token = sessionStorage.getItem('token')
+    if (!track?._id || !token) return
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/recent/${track._id}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      if (!res.ok) return
+
+      await fetchRecentlyPlayed()
+    }
+    catch (err) {
+      console.error('Failed to update recently played', err)
+    }
   }
 
-const playNext = () => {
-  setCurrentIndex(prev => {
-    if (prev === null){return prev;}
-    if (prev + 1 < queue.length){return prev + 1;}
-    return prev;
-  })
-}
+  const playNext = () => {
+    setCurrentIndex(prev => {
+      if (prev === null) { return prev; }
+      if (prev + 1 < queue.length) { return prev + 1; }
+      return prev;
+    })
+  }
 
-const playPrev = () => {
-  setCurrentIndex(prev => {
-    if (prev === null){return prev;}
-    if (prev - 1 >= 0){return prev - 1;}
-    return prev;
-  })
-}
+  const playPrev = () => {
+    setCurrentIndex(prev => {
+      if (prev === null) { return prev; }
+      if (prev - 1 >= 0) { return prev - 1; }
+      return prev;
+    })
+  }
 
-// LIKES STATE
-const [likedTracks, setLikedTracks] = useState([])
-const token = sessionStorage.getItem('token');
+  // LIKES STATE
+  const [likedTracks, setLikedTracks] = useState([])
+  const token = sessionStorage.getItem('token');
 
-// LOAD LIKES
+  // LOAD LIKES
   useEffect(() => {
     if (!token) {
       setLikedTracks([])
@@ -91,9 +114,9 @@ const token = sessionStorage.getItem('token');
       const { liked } = await res.json()
       setLikedTracks(prev => {
         if (liked) {
-        const alreadyLiked = prev.some(t => t._id === track._id)
-        if (alreadyLiked) return prev
-        return [track, ...prev]
+          const alreadyLiked = prev.some(t => t._id === track._id)
+          if (alreadyLiked) return prev
+          return [track, ...prev]
         }
         else {
           return prev.filter(t => t._id !== track._id)
@@ -105,6 +128,35 @@ const token = sessionStorage.getItem('token');
     }
   }
 
+  // RECENTLY PLAYED
+  const [recentlyPlayed, setRecentlyPlayed] = useState([])
+
+  const fetchRecentlyPlayed = async () => {
+    if (!token) return
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/recent`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      if (!res.ok) return
+
+      const data = await res.json()
+      setRecentlyPlayed(data)
+    } catch (err) {
+      console.error('Failed to fetch recently played', err)
+    }
+  }
+
+  useEffect(() => {
+    fetchRecentlyPlayed()
+  }, [token])
+
   // UI
   const location = useLocation()
   const hideSidebarRoutes = ['/login', '/register']
@@ -112,7 +164,7 @@ const token = sessionStorage.getItem('token');
 
   return (
     <div className="h-screen flex flex-col bg-black">
-      <Header/>
+      <Header />
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar />}
 
@@ -138,23 +190,38 @@ const token = sessionStorage.getItem('token');
             }
           />
 
-            {/* USER , ARTIST , ADMIN */}
+          {/* USER , ARTIST , ADMIN */}
 
           <Route element={<ProtectedRoute roles={['user', 'artist', 'admin']} />}>
-          <Route
-            path="/library"
-            element={<Library likedCount={likedTracks.length}/>}
-          />
-          <Route
-            path="/library/liked"
-            element={
-            <LikedSongs 
-              likedTracks={likedTracks}
-              onPlay={handlePlay}
-              currentTrack={currentTrack}
+            <Route
+              path="/library"
+              element={
+                <Library
+                  likedCount={likedTracks.length}
+                  recentCount={recentlyPlayed.length}
+                />
+              }
             />
-            }
-          />
+            <Route
+              path="/library/liked"
+              element={
+                <LikedSongs
+                  likedTracks={likedTracks}
+                  onPlay={handlePlay}
+                  currentTrack={currentTrack}
+                />
+              }
+            />
+            <Route
+              path="/library/recent"
+              element={
+                <RecentlyPlayed
+                  tracks={recentlyPlayed}
+                  onPlay={handlePlay}
+                  currentTrack={currentTrack}
+                />
+              }
+            />
           </Route>
 
           <Route path="/login" element={<Login />} />
@@ -177,13 +244,13 @@ const token = sessionStorage.getItem('token');
       </div>
 
       {!hideSidebar && (
-      <PlayerBar 
-      currentTrack={currentTrack}
-      onNext={playNext}
-      onPrev={playPrev}
-      likedTrackIds={likedTracks.map(i => i._id)}
-      onToggleLike={toggleLike}
-      />)}
+        <PlayerBar
+          currentTrack={currentTrack}
+          onNext={playNext}
+          onPrev={playPrev}
+          likedTrackIds={likedTracks.map(i => i._id)}
+          onToggleLike={toggleLike}
+        />)}
     </div>
   )
 }
