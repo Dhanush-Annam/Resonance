@@ -71,12 +71,12 @@ export default function Search({ onPlay, currentTrack }) {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {tracks.map(track => (
+        {tracks.map((track, index) => (
           <TrackCard
             key={track._id}
             track={track}
-            onPlay={onPlay}
-            currentTrack={currentTrack}
+            onPlay={() => onPlay(tracks, index)}
+            isActive={currentTrack?._id === track._id}
           />
         ))}
       </div>
