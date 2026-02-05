@@ -36,6 +36,7 @@ app.use(
 )
 app.use('/api/library', require('./routes/libraryRoutes'));
 app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api/playlists', require('./routes/playlistRoutes'))
 
 // HEALTH CHECK
 app.get('/health', (req, res) => {
