@@ -14,6 +14,8 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminCreateTrack from './pages/AdminCreateTrack'
 import LikedSongs from './pages/LikedSongs'
 import RecentlyPlayed from './pages/RecentlyPlayed'
+import CreatePlaylist from './pages/CreatePlaylist'
+import Playlists from './pages/Playlists'
 
 function App() {
 
@@ -69,6 +71,63 @@ function App() {
   const [likedTracks, setLikedTracks] = useState([])
   const token = sessionStorage.getItem('token');
 
+  // PLAYLISTS STATE
+  const [playlists, setPlaylists] = useState([])
+
+  const fetchPlaylists = async () => {
+    if (!token) {
+      setPlaylists([])
+      return
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playlists`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!res.ok) return
+
+      const data = await res.json()
+      setPlaylists(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Failed to load playlists', err)
+    }
+  }
+
+  const addTrackToPlaylist = async (playlistId, trackId) => {
+    if (!playlistId || !trackId || !token) return { ok: false }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/playlists/${playlistId}/tracks`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ trackId }),
+        },
+      )
+
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        return { ok: false, message: data?.message || 'Failed to add track' }
+      }
+
+      // Keep Library playlist counts reasonably fresh
+      fetchPlaylists()
+
+      return { ok: true }
+    } catch (err) {
+      console.error('Failed to add track to playlist', err)
+      return { ok: false, message: 'Failed to add track' }
+    }
+  }
+
   // LOAD LIKES
   useEffect(() => {
     if (!token) {
@@ -94,6 +153,10 @@ function App() {
       }
     }
     fetchLikedSongs()
+  }, [token])
+
+  useEffect(() => {
+    fetchPlaylists()
   }, [token])
 
   // TOGGLE LIKE
@@ -199,6 +262,23 @@ function App() {
                 <Library
                   likedCount={likedTracks.length}
                   recentCount={recentlyPlayed.length}
+                  playlists={playlists}
+                />
+              }
+            />
+
+            <Route
+              path="/library/playlists/new"
+              element={<CreatePlaylist onCreated={fetchPlaylists} />}
+            />
+
+            <Route
+              path="/library/playlists/:id"
+              element={
+                <Playlists
+                  onPlay={handlePlay}
+                  currentTrack={currentTrack}
+                  onPlaylistChanged={fetchPlaylists}
                 />
               }
             />
@@ -250,6 +330,8 @@ function App() {
           onPrev={playPrev}
           likedTrackIds={likedTracks.map(i => i._id)}
           onToggleLike={toggleLike}
+          playlists={playlists}
+          onAddToPlaylist={addTrackToPlaylist}
         />)}
     </div>
   )
