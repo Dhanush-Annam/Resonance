@@ -11,6 +11,7 @@ export default function TrackList({ tracks, onPlay, currentTrack, onDelete, role
           isActive={currentTrack?._id === track._id}
           onDelete={onDelete}
           role={role}
+          priority={index === 0}
         />
       ))}
     </div>

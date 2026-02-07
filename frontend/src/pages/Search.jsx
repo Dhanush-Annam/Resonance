@@ -77,6 +77,7 @@ export default function Search({ onPlay, currentTrack }) {
             track={track}
             onPlay={() => onPlay(tracks, index)}
             isActive={currentTrack?._id === track._id}
+            priority={index === 0}
           />
         ))}
       </div>

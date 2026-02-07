@@ -1,4 +1,21 @@
-export default function TrackCard({ track, onPlay, isActive, onDelete, role }) {
+import { cloudinaryCoverSrcSet, cloudinaryCoverUrl } from '../utils/cloudinary'
+
+export default function TrackCard({
+  track,
+  onPlay,
+  isActive,
+  onDelete,
+  role,
+  priority = false,
+}) {
+
+  const rawCoverUrl = track.coverUrl || '/no-image.jpg'
+  const coverSrc = cloudinaryCoverUrl(rawCoverUrl, { w: 800 })
+  const coverSrcSet = cloudinaryCoverSrcSet(rawCoverUrl, [
+    { w: 400 },
+    { w: 800 },
+    { w: 1200 },
+  ])
 
   return (
     <div
@@ -12,8 +29,14 @@ export default function TrackCard({ track, onPlay, isActive, onDelete, role }) {
 
     >
       <img
-        src={track.coverUrl || '/no-image.jpg'}
-        className="w-full h-80 object-cover rounded"
+        src={coverSrc}
+        srcSet={coverSrcSet}
+        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        alt={track.title ? `${track.title} cover` : 'Track cover'}
+        className="w-full h-80 object-cover object-center rounded"
+        decoding="async"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
       />
 
       <h3 className="font-semibold">{track.title}</h3>

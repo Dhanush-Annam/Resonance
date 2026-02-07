@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { cloudinaryCoverSrcSet, cloudinaryCoverUrl } from '../utils/cloudinary'
 
 export default function RecentlyPlayed({ tracks = [], onPlay, currentTrack }) {
 
@@ -32,8 +33,17 @@ export default function RecentlyPlayed({ tracks = [], onPlay, currentTrack }) {
                                 }`}
                         >
                             <img
-                                src={track.coverUrl || '/no-image.jpg'}
+                                                                src={cloudinaryCoverUrl(track.coverUrl || '/no-image.jpg', { w: 600 })}
+                                                                srcSet={cloudinaryCoverSrcSet(track.coverUrl || '/no-image.jpg', [
+                                                                    { w: 300 },
+                                                                    { w: 600 },
+                                                                    { w: 900 },
+                                                                ])}
+                                                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                                                alt={track.title ? `${track.title} cover` : 'Track cover'}
                                 className="w-full h-44 object-cover rounded mb-3"
+                                                                decoding="async"
+                                                                loading="lazy"
                             />
                             <p className="font-medium">{track.title}</p>
                             <p className="text-sm text-gray-400">
