@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import PlayerBar from './components/PlayerBar'
@@ -333,6 +334,7 @@ function App() {
           playlists={playlists}
           onAddToPlaylist={addTrackToPlaylist}
         />)}
+      <SpeedInsights />
     </div>
   )
 }
