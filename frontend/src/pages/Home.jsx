@@ -4,6 +4,7 @@ import TrackList from '../components/TrackList'
 import Pagination from '../components/Pagination'
 
 const LIMIT = 6
+const SEARCH_DEBOUNCE_MS = 300
 
 export default function Home({ onPlay, currentTrack }) {
   const [tracks, setTracks] = useState([])
@@ -33,29 +34,54 @@ export default function Home({ onPlay, currentTrack }) {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const controller = new AbortController()
+    let active = true
+
+    const fetchTracks = async () => {
       setLoading(true)
 
       const endpoint = searchTerm
         ? `/api/tracks/search?q=${encodeURIComponent(searchTerm)}&page=${page}&limit=${LIMIT}`
         : `/api/tracks/public?page=${page}&limit=${LIMIT}`
 
-      fetch(`${import.meta.env.VITE_API_URL}${endpoint}`)
-        .then(res => res.json())
-        .then(data => {
-          if (searchTerm) {
-            setTracks(data.results)
-            setTotalPages(data.totalPages)
-          } else {
-            setTracks(data)
-            setTotalPages(1)
-          }
-          setLoading(false)
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+          signal: controller.signal,
         })
-        .catch(() => setLoading(false))
-    }, 1000) // 1 second debounce
+        const data = await res.json()
 
-    return () => clearTimeout(timer)
+        if (!active) return
+
+        if (searchTerm) {
+          setTracks(Array.isArray(data?.results) ? data.results : [])
+          setTotalPages(Number.isFinite(data?.totalPages) ? data.totalPages : 1)
+        } else {
+          setTracks(Array.isArray(data) ? data : [])
+          setTotalPages(1)
+        }
+      }
+      catch (err) {
+        if (!active) return
+      }
+      finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    if (!searchTerm) {
+      fetchTracks()
+      return () => {
+        active = false
+        controller.abort()
+      }
+    }
+
+    const timer = setTimeout(fetchTracks, SEARCH_DEBOUNCE_MS)
+    return () => {
+      active = false
+      clearTimeout(timer)
+      controller.abort()
+    }
   }, [searchTerm, page])
 
   useEffect(() => {
