@@ -17,10 +17,16 @@ export default function Header() {
     <div className="h-14 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between px-6">
       <Link
         to="/"
+        className="flex items-center gap-2"
       >
-      <h1 className="text-white font-bold text-lg">
-        🎧 Resonance
-      </h1>
+        <img
+          src="/favicon-wave-blue.svg"
+          alt="Resonance"
+          className="h-16 w-16"
+        />
+        <h1 className="text-white font-bold text-lg">
+          Resonance
+        </h1>
       </Link>
       {user && (
         <input

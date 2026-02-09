@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg" cx="32" cy="28" r="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b2b4a" />
+      <stop offset="1" stop-color="#050414" />
+    </radialGradient>
+
+    <linearGradient id="wave" x1="8" y1="32" x2="56" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2dd4ff" stop-opacity="0.9" />
+      <stop offset="0.55" stop-color="#22f1ff" stop-opacity="1" />
+      <stop offset="1" stop-color="#2dd4ff" stop-opacity="0.9" />
+    </linearGradient>
+
+    <clipPath id="clip">
+      <circle cx="32" cy="32" r="28" />
+    </clipPath>
+  </defs>
+
+  <circle cx="32" cy="32" r="28" fill="url(#bg)" />
+
+  <g clip-path="url(#clip)" fill="none" stroke="url(#wave)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- bright center line -->
+    <path d="M6 34
+             C 14 30, 18 38, 24 34
+             C 28 20, 32 16, 36 34
+             C 40 50, 44 44, 48 34
+             C 52 26, 56 40, 62 34" stroke-width="2.6" />
+
+  </g>
+
+</svg>
