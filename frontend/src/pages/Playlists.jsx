@@ -165,7 +165,7 @@ export default function Playlists({ onPlay, currentTrack, onPlaylistChanged }) {
       ) : trackList.length === 0 ? (
         <p className="text-gray-400">No songs in this playlist yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {trackList.map((track, index) => (
             <div
               key={track._id}
@@ -181,7 +181,7 @@ export default function Playlists({ onPlay, currentTrack, onPlaylistChanged }) {
                     { w: 600 },
                     { w: 900 },
                   ])}
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   alt={track.title ? `${track.title} cover` : 'Track cover'}
                 className="w-full h-44 object-cover rounded mb-3"
                   decoding="async"
