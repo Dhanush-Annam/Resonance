@@ -1,6 +1,71 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+function parseLyrics(lyrics) {
+  if (typeof lyrics !== 'string' || !lyrics.trim()) return []
+
+  const results = []
+  const lines = lyrics.split(/\r?\n/)
+  const timeTag = /\[(\d{2}):(\d{2})(?:\.(\d{1,2}))?\]/g
+
+  for (const raw of lines) {
+    const line = raw.trimEnd()
+    if (!line){
+      continue;
+    }
+    let match
+    const times = []
+    while ((match = timeTag.exec(line)) !== null) {
+      const minutes = Number(match[1])
+      const seconds = Number(match[2])
+      const fraction = match[3] ? Number(match[3].padEnd(2, '0')) : 0
+      if (!Number.isFinite(minutes) || !Number.isFinite(seconds) || !Number.isFinite(fraction)){
+        continue;
+      }
+      const time = minutes * 60 + seconds + fraction / 100
+      times.push(time)
+    }
+
+    const text = line.replace(timeTag, '').trim()
+    if (!times.length){
+      continue;
+    }
+
+    for (const time of times) {
+      results.push({ time, text })
+    }
+  }
+
+  results.sort((a, b) => a.time - b.time)
+  return results;
+}
+
+function findActiveIndex(lines, currentTimeSeconds) {
+  if (!Array.isArray(lines) || lines.length === 0){
+    return -1;
+  }
+  const t = Number(currentTimeSeconds)
+  if (!Number.isFinite(t)){
+    return -1;
+  }
+
+  let low = 0
+  let high = lines.length - 1
+  let ans = -1
+
+  while (low <= high) {
+    const mid = (low + high) >> 1;
+    if (lines[mid].time <= t) {
+      ans = mid
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+
+  return ans;
+}
+
 export default function PlayerBar({
   currentTrack,
   onNext,
@@ -27,6 +92,11 @@ export default function PlayerBar({
   const [adding, setAdding] = useState(false)
   const [addStatus, setAddStatus] = useState('')
   const [showPlaylistPopover, setShowPlaylistPopover] = useState(false)
+
+  const [showLyricsPopover, setShowLyricsPopover] = useState(false)
+  const [lyricsLoading, setLyricsLoading] = useState(false)
+  const [lyricsError, setLyricsError] = useState('')
+  const [lyricsData, setLyricsData] = useState(null)
 
   useEffect(() => {
     if (!selectedPlaylistId && playablePlaylists.length > 0) {
@@ -64,6 +134,82 @@ export default function PlayerBar({
   useEffect(() => {
     setAddStatus('')
   }, [currentTrack?._id])
+
+  useEffect(() => {
+    setLyricsError('')
+    setLyricsData(null)
+  }, [currentTrack?._id])
+
+  useEffect(() => {
+    if (!showLyricsPopover){
+      return;
+    }
+    if (!currentTrack?.title){
+      return;
+    }
+
+    const controller = new AbortController()
+    let active = true
+
+    const fetchLyrics = async () => {
+      try {
+        setLyricsLoading(true)
+        setLyricsError('')
+
+        const params = new URLSearchParams({
+          track_name: currentTrack.title,
+        })
+
+        if (Number.isFinite(duration) && duration > 0) {
+          params.set('duration', String(Math.round(duration)))
+        }
+
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/lyrics?${params.toString()}`,
+          { signal: controller.signal }
+        )
+
+        if (!res.ok) {
+          const message = res.status === 404 ? 'Lyrics not found' : 'Failed to load lyrics'
+          throw new Error(message)
+        }
+
+        const data = await res.json()
+        if (!active){
+          return;
+        }
+        setLyricsData(data)
+      }
+      catch (err) {
+        if (!active){
+          return;
+        }
+        if (err?.name === 'AbortError'){
+          return;
+        }
+        setLyricsError(err?.message || 'Failed to load lyrics')
+      }
+      finally {
+        if (active){
+          setLyricsLoading(false);
+        }
+      }
+    }
+
+    fetchLyrics()
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [showLyricsPopover, currentTrack?.title, duration])
+
+  const syncedLines = useMemo(() => {
+    return parseLyrics(lyricsData?.syncedLyrics)
+  }, [lyricsData?.syncedLyrics])
+
+  const activeLyricIndex = useMemo(() => {
+    return findActiveIndex(syncedLines, currentTime)
+  }, [syncedLines, currentTime])
 
   if (!currentTrack) {
     return (
@@ -152,6 +298,17 @@ export default function PlayerBar({
 
       {/* RIGHT: Volume */}
       <div className="flex items-center justify-end gap-3 w-1/3">
+        <button
+          onClick={() => {
+            setShowLyricsPopover((v) => !v)
+            setShowPlaylistPopover(false)
+          }}
+          className="h-9 px-3 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-sm"
+          title="Lyrics"
+        >
+          Lyrics
+        </button>
+
         {typeof onAddToPlaylist === 'function' && (
           <button
             onClick={() => setShowPlaylistPopover((v) => !v)}
@@ -256,6 +413,58 @@ export default function PlayerBar({
 
               {addStatus && (
                 <p className="text-xs text-gray-400">{addStatus}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Lyrics popover */}
+      {showLyricsPopover && (
+        <div className="absolute right-4 bottom-24 w-96 bg-zinc-900 border border-zinc-800 rounded p-3">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-white">Lyrics</p>
+            <button
+              onClick={() => setShowLyricsPopover(false)}
+              className="text-xs text-gray-400 hover:text-white"
+              title="Close"
+            >
+              ✕
+            </button>
+          </div>
+
+          {lyricsLoading && (
+            <p className="text-sm text-gray-400">Loading…</p>
+          )}
+
+          {!lyricsLoading && lyricsError && (
+            <p className="text-sm text-gray-400">{lyricsError}</p>
+          )}
+
+          {!lyricsLoading && !lyricsError && lyricsData && (
+            <div className="max-h-72 overflow-y-auto space-y-1">
+              {syncedLines.length > 0 ? (
+                syncedLines.map((l, idx) => (
+                  <p
+                    key={`${l.time}-${idx}`}
+                    className={
+                      idx === activeLyricIndex
+                        ? 'text-sm text-white font-semibold'
+                        : 'text-sm text-gray-400'
+                    }
+                  >
+                    {l.text || '…'}
+                  </p>
+                ))
+              ) : (
+                (lyricsData?.plainLyrics || '')
+                  .split(/\r?\n/)
+                  .filter(Boolean)
+                  .map((line, idx) => (
+                    <p key={idx} className="text-sm text-gray-400">
+                      {line}
+                    </p>
+                  ))
               )}
             </div>
           )}
