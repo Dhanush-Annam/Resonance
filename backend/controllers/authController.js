@@ -37,7 +37,8 @@ exports.register = async (req, res) => {
       token
     });
   } catch (error) {
-    res.status(500).json({ message: 'Registration failed' });
+    console.error('Registration failed:', error);
+    res.status(500).json({ message: 'Registration failed', error: error.message });
   }
 };
 
@@ -72,6 +73,7 @@ exports.login = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ message: 'Login failed' });
+    console.error('Login failed:', error);
+    res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
