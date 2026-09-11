@@ -13,6 +13,7 @@ import {
   X,
   Music2,
 } from 'lucide-react'
+import { cloudinaryCoverUrl } from '../utils/cloudinary'
 
 function parseLyrics(lyrics) {
   if (typeof lyrics !== 'string' || !lyrics.trim()) return []
@@ -236,7 +237,7 @@ export default function PlayerBar({
       {/* LEFT: Track Metadata & Artwork */}
       <div className="flex items-center gap-3 w-1/3 min-w-0">
         <img
-          src={currentTrack.coverUrl || '/placeholder.png'}
+          src={cloudinaryCoverUrl(currentTrack.coverUrl || '/placeholder.png', { w: 200, h: 200 })}
           alt={currentTrack.title}
           className="h-12 w-12 sm:h-14 sm:w-14 rounded-md object-cover shrink-0 shadow-md border border-zinc-800"
         />

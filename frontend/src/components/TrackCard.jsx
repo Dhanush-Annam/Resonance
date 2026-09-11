@@ -11,11 +11,11 @@ export default function TrackCard({
   priority = false,
 }) {
   const rawCoverUrl = track.coverUrl || '/no-image.jpg'
-  const coverSrc = cloudinaryCoverUrl(rawCoverUrl, { w: 600 })
+  const coverSrc = cloudinaryCoverUrl(rawCoverUrl, { w: 800 })
   const coverSrcSet = cloudinaryCoverSrcSet(rawCoverUrl, [
-    { w: 300 },
-    { w: 600 },
-    { w: 900 },
+    { w: 400 },
+    { w: 800 },
+    { w: 1200 },
   ])
 
   const isCurrentlyPlaying = isActive && isPlaying
@@ -34,7 +34,7 @@ export default function TrackCard({
         <img
           src={coverSrc}
           srcSet={coverSrcSet}
-          sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           alt={track.title ? `${track.title} cover` : 'Track cover'}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
           decoding="async"

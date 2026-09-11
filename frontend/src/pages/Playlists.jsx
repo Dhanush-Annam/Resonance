@@ -214,13 +214,13 @@ export default function Playlists({ onPlay, currentTrack, isPlaying = false, onP
                 {/* Artwork */}
                 <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-zinc-800 mb-3 shadow-inner">
                   <img
-                    src={cloudinaryCoverUrl(track.coverUrl || '/no-image.jpg', { w: 600 })}
+                    src={cloudinaryCoverUrl(track.coverUrl || '/no-image.jpg', { w: 800 })}
                     srcSet={cloudinaryCoverSrcSet(track.coverUrl || '/no-image.jpg', [
-                      { w: 300 },
-                      { w: 600 },
-                      { w: 900 },
+                      { w: 400 },
+                      { w: 800 },
+                      { w: 1200 },
                     ])}
-                    sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                    sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     alt={track.title ? `${track.title} cover` : 'Track cover'}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                     decoding="async"

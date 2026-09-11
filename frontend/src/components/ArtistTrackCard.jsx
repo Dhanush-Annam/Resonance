@@ -1,5 +1,6 @@
 import UploadAudioButton from './UploadAudioButton'
 import UploadCoverButton from './UploadCoverButton'
+import { cloudinaryCoverUrl } from '../utils/cloudinary'
 
 export default function ArtistTrackCard({ track, onUpdated, onDelete }) {
   const statusColors = {
@@ -14,7 +15,7 @@ export default function ArtistTrackCard({ track, onUpdated, onDelete }) {
       <div className="mb-3">
         {track.coverUrl ? (
           <img
-            src={track.coverUrl}
+            src={cloudinaryCoverUrl(track.coverUrl, { w: 400, h: 400 })}
             alt="Cover"
             className="w-full h-40 object-cover rounded"
           />

@@ -19,19 +19,22 @@ function TransformIntoCloudinaryUrl(url, transform) {
   return `${prefix}${transform}/${rest}`
 }
 
-export function cloudinaryCoverUrl(url, { w, h }) {
+export function cloudinaryCoverUrl(url, { w, h } = {}) {
   if (!isCloudinaryImageUrl(url)) return url
 
   const width = Number(w)
-  if (!Number.isFinite(width)) return url
+  const height = Number(h)
 
   const transform = [
     'f_auto',
-    'q_auto',
-    'fl_progressive',
-    'c_scale',
-    `w_${width}`,
-  ].join(',')
+    'q_auto:best',
+    'dpr_auto',
+    'c_fill',
+    'ar_1:1',
+    'g_auto',
+    Number.isFinite(width) ? `w_${width}` : null,
+    Number.isFinite(height) ? `h_${height}` : null,
+  ].filter(Boolean).join(',')
 
   return TransformIntoCloudinaryUrl(url, transform)
 }
