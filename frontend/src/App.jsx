@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, NavLink } from 'react-router-dom'
+import { Home as HomeIcon, Search as SearchIcon, Library as LibraryIcon } from 'lucide-react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import Header from './components/Header'
@@ -24,13 +25,21 @@ function App() {
   // PLAYER STATE
   const [queue, setQueue] = useState([])
   const [currentIndex, setCurrentIndex] = useState(null)
+  const [isPlaying, setIsPlaying] = useState(false)
   const currentTrack = currentIndex !== null ? queue[currentIndex] : null
 
   const handlePlay = async (tracks, index) => {
+    const track = tracks[index]
+
+    // If user clicked the track that is ALREADY loaded, toggle play/pause
+    if (currentTrack && track && currentTrack._id === track._id) {
+      setIsPlaying(prev => !prev)
+      return
+    }
+
     setQueue(tracks)
     setCurrentIndex(index)
-
-    const track = tracks[index]
+    setIsPlaying(true)
     const token = sessionStorage.getItem('token')
     if (!track?._id || !token) return
 
@@ -241,6 +250,7 @@ function App() {
               <Home
                 onPlay={handlePlay}
                 currentTrack={currentTrack}
+                isPlaying={isPlaying}
               />
             }
           />
@@ -251,6 +261,7 @@ function App() {
               <Search
                 onPlay={handlePlay}
                 currentTrack={currentTrack}
+                isPlaying={isPlaying}
               />
             }
           />
@@ -280,6 +291,7 @@ function App() {
                 <Playlists
                   onPlay={handlePlay}
                   currentTrack={currentTrack}
+                  isPlaying={isPlaying}
                   onPlaylistChanged={fetchPlaylists}
                 />
               }
@@ -291,6 +303,7 @@ function App() {
                   likedTracks={likedTracks}
                   onPlay={handlePlay}
                   currentTrack={currentTrack}
+                  isPlaying={isPlaying}
                 />
               }
             />
@@ -301,6 +314,7 @@ function App() {
                   tracks={recentlyPlayed}
                   onPlay={handlePlay}
                   currentTrack={currentTrack}
+                  isPlaying={isPlaying}
                 />
               }
             />
@@ -326,15 +340,59 @@ function App() {
       </div>
 
       {!hideSidebar && (
-        <PlayerBar
-          currentTrack={currentTrack}
-          onNext={playNext}
-          onPrev={playPrev}
-          likedTrackIds={likedTracks.map(i => i._id)}
-          onToggleLike={toggleLike}
-          playlists={playlists}
-          onAddToPlaylist={addTrackToPlaylist}
-        />)}
+        <>
+          <PlayerBar
+            currentTrack={currentTrack}
+            isPlaying={isPlaying}
+            onTogglePlay={() => setIsPlaying(p => !p)}
+            onNext={playNext}
+            onPrev={playPrev}
+            likedTrackIds={likedTracks.map(i => i._id)}
+            onToggleLike={toggleLike}
+            playlists={playlists}
+            onAddToPlaylist={addTrackToPlaylist}
+          />
+
+          {/* Mobile Bottom Navigation Bar */}
+          <nav className="md:hidden h-14 bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/80 flex items-center justify-around px-4 select-none z-20">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 transition ${
+                  isActive ? 'text-emerald-400 font-semibold' : 'text-zinc-400 hover:text-white'
+                }`
+              }
+            >
+              <HomeIcon className="w-5 h-5" />
+              <span className="text-[10px]">Home</span>
+            </NavLink>
+
+            <NavLink
+              to="/search"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 transition ${
+                  isActive ? 'text-emerald-400 font-semibold' : 'text-zinc-400 hover:text-white'
+                }`
+              }
+            >
+              <SearchIcon className="w-5 h-5" />
+              <span className="text-[10px]">Search</span>
+            </NavLink>
+
+            <NavLink
+              to="/library"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 transition ${
+                  isActive ? 'text-emerald-400 font-semibold' : 'text-zinc-400 hover:text-white'
+                }`
+              }
+            >
+              <LibraryIcon className="w-5 h-5" />
+              <span className="text-[10px]">Library</span>
+            </NavLink>
+          </nav>
+        </>
+      )}
       <SpeedInsights />
       <Analytics />
     </div>
