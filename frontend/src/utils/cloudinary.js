@@ -44,7 +44,7 @@ export function cloudinaryCoverSrcSet(url, variants) {
   if (!Array.isArray(variants) || variants.length === 0) return undefined
 
   const parts = variants
-    .map(({ w, h }) => {
+    .map(({ w }) => {
       const width = Number(w)
       if (!Number.isFinite(width)) return null
       return `${cloudinaryCoverUrl(url, { w: width })} ${width}w`
