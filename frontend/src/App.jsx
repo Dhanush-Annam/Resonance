@@ -168,6 +168,7 @@ function App() {
 
   useEffect(() => {
     fetchPlaylists()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   // TOGGLE LIKE
@@ -229,6 +230,7 @@ function App() {
 
   useEffect(() => {
     fetchRecentlyPlayed()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   // UI
@@ -237,7 +239,7 @@ function App() {
   const hideSidebar = hideSidebarRoutes.includes(location.pathname)
 
   return (
-    <div className="h-screen flex flex-col bg-black">
+    <div className="h-screen flex flex-col bg-canvas-base text-text-primary">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar />}
@@ -354,41 +356,51 @@ function App() {
           />
 
           {/* Mobile Bottom Navigation Bar */}
-          <nav className="md:hidden h-14 bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/80 flex items-center justify-around px-4 select-none z-20">
+          <nav
+            aria-label="Mobile Navigation"
+            className="md:hidden h-14 bg-surface-raised/95 backdrop-blur-xl border-t border-border-rule flex items-center justify-around px-4 select-none z-20"
+          >
             <NavLink
               to="/"
+              end
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition ${
-                  isActive ? 'text-emerald-400 font-semibold' : 'text-zinc-400 hover:text-white'
+                `flex flex-col items-center gap-1 py-1 px-3 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border-focus ${
+                  isActive
+                    ? 'text-text-primary font-medium'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`
               }
             >
               <HomeIcon className="w-5 h-5" />
-              <span className="text-[10px]">Home</span>
+              <span className="text-[11px] font-sans tracking-tight">Home</span>
             </NavLink>
 
             <NavLink
               to="/search"
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition ${
-                  isActive ? 'text-emerald-400 font-semibold' : 'text-zinc-400 hover:text-white'
+                `flex flex-col items-center gap-1 py-1 px-3 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border-focus ${
+                  isActive
+                    ? 'text-text-primary font-medium'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`
               }
             >
               <SearchIcon className="w-5 h-5" />
-              <span className="text-[10px]">Search</span>
+              <span className="text-[11px] font-sans tracking-tight">Search</span>
             </NavLink>
 
             <NavLink
               to="/library"
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition ${
-                  isActive ? 'text-emerald-400 font-semibold' : 'text-zinc-400 hover:text-white'
+                `flex flex-col items-center gap-1 py-1 px-3 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border-focus ${
+                  isActive
+                    ? 'text-text-primary font-medium'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`
               }
             >
               <LibraryIcon className="w-5 h-5" />
-              <span className="text-[10px]">Library</span>
+              <span className="text-[11px] font-sans tracking-tight">Library</span>
             </NavLink>
           </nav>
         </>

@@ -1,11 +1,171 @@
 @import "tailwindcss";
 
+@theme {
+  /* Canvas & Structural Surfaces */
+  --color-canvas-base: #101114; /* Deep Archival Charcoal (Base Background) */
+  --color-canvas-subtle: #14161a; /* Secondary Page Background */
+  --color-surface-raised: #181a1f; /* Cards, Table Rows, Sidebar, Player Bar */
+  --color-surface-elevated: #1e2027; /* Popovers, Modal Dialogs, Floating Sheets */
+  --color-surface-hover: #23262f; /* Interactive Hover State */
+  --color-surface-active: #2b2e38; /* Pressed State */
+
+  /* Hairlines & Boundaries */
+  --color-border-subtle: #1c1e24; /* Decorative Section Dividers (1px) */
+  --color-border-rule: #262932; /* Standard Surface Rules (1px) */
+  --color-border-control: #687084; /* Essential Input & Control Borders (3.51:1 on raised, 3.28:1 on elevated) */
+  --color-border-focus: #f5f2eb; /* Keyboard Focus Visible Ring (16.89:1) */
+
+  /* Typography Roles */
+  --color-text-primary: #f5f2eb; /* Bleached Newsprint (High Contrast Body & Headings) */
+  --color-text-secondary: #9ba0ad; /* Muted Slate (Labels, Artist Names, Metadata) */
+  --color-text-tertiary: #7e8594; /* Quiet Captions, Durations, Timestamps */
+  --color-text-inverse: #101114; /* Dark Text on Light Action Buttons */
+
+  /* Direct Shorthand Aliases for Theme Utility Convenience */
+  --color-primary: #f5f2eb;
+  --color-secondary: #9ba0ad;
+  --color-tertiary: #7e8594;
+  --color-inverse: #101114;
+  --color-rule: #262932;
+  --color-subtle: #1c1e24;
+  --color-control: #687084;
+
+  /* Brand Accent: Stamp Vermilion */
+  --color-accent-brand: #c83f2d; /* Solid Accent Actions (Passes 4.99:1 with white text) */
+  --color-accent-hover: #b53625; /* Accent Hover State */
+  --color-accent-text: #ff6b57; /* Inline Accent Text (Passes 6.21:1 on dark) */
+  --color-accent-subtle: rgba(200, 63, 45, 0.12); /* Selected Item Background Tint */
+  --color-accent-border: rgba(200, 63, 45, 0.35); /* Selected Item Border */
+
+  /* Semantic Feedback Roles */
+  --color-status-pending-bg: rgba(251, 191, 36, 0.10);
+  --color-status-pending-fg: #fbbf24; /* Amber Seal (10.43:1) */
+  --color-status-pending-bd: rgba(251, 191, 36, 0.30);
+
+  --color-status-approved-bg: rgba(52, 211, 153, 0.10);
+  --color-status-approved-fg: #34d399; /* Archived Green (9.05:1) */
+  --color-status-approved-bd: rgba(52, 211, 153, 0.30);
+
+  --color-status-rejected-bg: rgba(248, 113, 113, 0.10);
+  --color-status-rejected-fg: #f87171; /* Deaccessioned Rose (6.29:1) */
+  --color-status-rejected-bd: rgba(248, 113, 113, 0.30);
+
+  /* Font Families */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-editorial: 'Instrument Serif', Georgia, Cambria, 'Times New Roman', Times, serif;
+
+  /* Typographic Scale & Line Heights */
+  --text-display: 44px;
+  --text-display--line-height: 1.10;
+
+  --text-h1: 32px;
+  --text-h1--line-height: 1.15;
+
+  --text-h2: 24px;
+  --text-h2--line-height: 1.20;
+
+  --text-h3: 18px;
+  --text-h3--line-height: 1.25;
+
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 1.50;
+
+  --text-body: 14px;
+  --text-body--line-height: 1.45;
+
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 1.40;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.35;
+
+  --text-mono-num: 12px;
+  --text-mono-num--line-height: 1.00;
+
+  --text-mono-sub: 11px;
+  --text-mono-sub--line-height: 1.00;
+
+  /* Shape & Radius Hierarchy */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Elevation Shadows */
+  --shadow-level-1: none;
+  --shadow-level-2: 0 12px 32px rgba(0, 0, 0, 0.70);
+  --shadow-level-3: 0 24px 48px rgba(0, 0, 0, 0.85);
+}
+
 @layer base {
+  :root {
+    color-scheme: dark;
+
+    /* Explicit CSS Custom Properties registration for runtime access */
+    --color-canvas-base: #101114;
+    --color-canvas-subtle: #14161a;
+    --color-surface-raised: #181a1f;
+    --color-surface-elevated: #1e2027;
+    --color-surface-hover: #23262f;
+    --color-surface-active: #2b2e38;
+
+    --color-border-subtle: #1c1e24;
+    --color-border-rule: #262932;
+    --color-border-control: #687084;
+    --color-border-focus: #f5f2eb;
+
+    --color-text-primary: #f5f2eb;
+    --color-text-secondary: #9ba0ad;
+    --color-text-tertiary: #7e8594;
+    --color-text-inverse: #101114;
+
+    --color-accent-brand: #c83f2d;
+    --color-accent-hover: #b53625;
+    --color-accent-text: #ff6b57;
+    --color-accent-subtle: rgba(200, 63, 45, 0.12);
+    --color-accent-border: rgba(200, 63, 45, 0.35);
+
+    --color-status-pending-bg: rgba(251, 191, 36, 0.10);
+    --color-status-pending-fg: #fbbf24;
+    --color-status-pending-bd: rgba(251, 191, 36, 0.30);
+
+    --color-status-approved-bg: rgba(52, 211, 153, 0.10);
+    --color-status-approved-fg: #34d399;
+    --color-status-approved-bd: rgba(52, 211, 153, 0.30);
+
+    --color-status-rejected-bg: rgba(248, 113, 113, 0.10);
+    --color-status-rejected-fg: #f87171;
+    --color-status-rejected-bd: rgba(248, 113, 113, 0.30);
+
+    --font-editorial: 'Instrument Serif', Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  html {
+    background-color: var(--color-canvas-base);
+    color: var(--color-text-primary);
+  }
+
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    background-color: #09090b;
-    color: #f4f4f5;
+    font-family: var(--font-sans);
+    background-color: var(--color-canvas-base);
+    color: var(--color-text-primary);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Default heading inheritance */
+  h1, h2, h3, h4, h5, h6 {
+    color: inherit;
+  }
+
+  /* Text selection */
+  ::selection {
+    background-color: var(--color-accent-brand);
+    color: #ffffff;
   }
 }
 
@@ -23,14 +183,14 @@ input[type="range"]:focus {
 
 /* Chrome, Safari, Edge WebKit */
 input[type="range"]::-webkit-slider-runnable-track {
-  background-color: #27272a;
+  background-color: #262932;
   height: 4px;
   border-radius: 9999px;
   transition: background-color 0.2s;
 }
 
 input[type="range"]:hover::-webkit-slider-runnable-track {
-  background-color: #3f3f46;
+  background-color: #3b3f4d;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -39,20 +199,20 @@ input[type="range"]::-webkit-slider-thumb {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background-color: #10b981;
+  background-color: #f5f2eb;
   margin-top: -4px;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
 input[type="range"]:hover::-webkit-slider-thumb {
-  transform: scale(1.25);
-  background-color: #34d399;
+  transform: scale(1.2);
+  background-color: #ffffff;
 }
 
 /* Firefox */
 input[type="range"]::-moz-range-track {
-  background-color: #27272a;
+  background-color: #262932;
   height: 4px;
   border-radius: 9999px;
 }
@@ -61,15 +221,15 @@ input[type="range"]::-moz-range-thumb {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background-color: #10b981;
+  background-color: #f5f2eb;
   border: none;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
   transition: transform 0.15s ease;
 }
 
 input[type="range"]:hover::-moz-range-thumb {
-  transform: scale(1.25);
-  background-color: #34d399;
+  transform: scale(1.2);
+  background-color: #ffffff;
 }
 
 /* Custom subtle scrollbar */
@@ -83,10 +243,10 @@ input[type="range"]:hover::-moz-range-thumb {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #1c1e24;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #262932;
 }
