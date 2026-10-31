@@ -1,13 +1,26 @@
-import { Play, Pause, Trash2, Volume2 } from 'lucide-react'
+import { Play, Pause, Trash2 } from 'lucide-react'
 import { cloudinaryCoverSrcSet, cloudinaryCoverUrl } from '../utils/cloudinary'
 
+/**
+ * Resonance Design System — Grid Track Card (<TrackCard />)
+ *
+ * Conforms to DESIGN.md Section 4.3 & Accessible Component Pattern:
+ * - Root element is a semantic <article> WITHOUT nested role="button" or tabIndex={0}
+ * - Discrete keyboard focus targets: Play trigger and Admin deletion trigger
+ * - Clicking the card surface starts playback without violating button-nesting semantics
+ * - Keyboard Enter/Space on nested controls cannot accidentally trigger parent handlers
+ * - 1:1 aspect-ratio container with 8px radius (rounded-md)
+ * - 36px circular off-white (#f5f2eb) play button with dark (#101114) glyph
+ */
 export default function TrackCard({
   track,
   onPlay,
-  isActive,
+  isActive = false,
   isPlaying = false,
   onDelete,
   role,
+  canDelete = role === 'admin',
+  deleteActionLabel = role === 'admin' ? 'Delete' : 'Remove',
   priority = false,
 }) {
   const rawCoverUrl = track.coverUrl || '/no-image.jpg'
@@ -19,92 +32,107 @@ export default function TrackCard({
   ])
 
   const isCurrentlyPlaying = isActive && isPlaying
+  const artistName = track.artist?.username || 'Unknown Artist'
+
+  const handleCardClick = (e) => {
+    // Prevent card click if an interactive element (e.g. Delete button) was targeted
+    if (e.target.closest('button')) return
+    if (onPlay) onPlay()
+  }
+
+  const handlePlayButtonClick = (e) => {
+    e.stopPropagation()
+    if (onPlay) onPlay()
+  }
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation()
+    if (onDelete && track._id) onDelete(track._id)
+  }
+
+  const handleControlKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // Isolate keydown inside nested interactive controls
+      e.stopPropagation()
+    }
+  }
 
   return (
-    <div
-      onClick={onPlay}
-      className={`group relative p-3 rounded-xl cursor-pointer transition-all duration-300 border ${
+    <article
+      onClick={handleCardClick}
+      aria-label={`${track.title || 'Untitled Track'} by ${artistName}`}
+      className={`group relative p-3 rounded-md transition-colors duration-200 border select-none cursor-pointer focus-within:border-border-control focus-within:ring-1 focus-within:ring-border-focus/40 ${
         isActive
-          ? 'bg-zinc-800/90 border-emerald-500/40 shadow-lg shadow-emerald-950/30 ring-1 ring-emerald-500/30'
-          : 'bg-zinc-900/60 hover:bg-zinc-800/70 border-zinc-800/60 hover:border-zinc-700/80 shadow-md hover:shadow-xl'
+          ? 'bg-surface-raised border-accent-brand ring-1 ring-accent-brand/40'
+          : 'bg-surface-raised border-border-rule hover:border-border-control hover:bg-surface-hover'
       }`}
     >
-      {/* Cover Artwork Container */}
-      <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-zinc-800 mb-3 shadow-inner">
+      {/* 1:1 Aspect Ratio Cover Artwork Container (8px radius) */}
+      <div className="relative w-full aspect-square rounded-md overflow-hidden bg-surface-elevated mb-3 border border-border-rule/60">
         <img
           src={coverSrc}
           srcSet={coverSrcSet}
-          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          alt={track.title ? `${track.title} cover` : 'Track cover'}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+          sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+          alt={track.title ? `${track.title} cover artwork` : 'Track cover artwork'}
+          className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300 ease-out"
           decoding="async"
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}
         />
 
-        {/* Floating Spotify-style Emerald Play Button */}
+        {/* 36px Circular Off-White Play Button */}
         <div className="absolute right-2.5 bottom-2.5">
           <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onPlay()
-            }}
-            aria-label={isCurrentlyPlaying ? 'Pause' : 'Play'}
-            className={`w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black flex items-center justify-center shadow-xl shadow-black/60 transition-all duration-300 transform ${
+            type="button"
+            onClick={handlePlayButtonClick}
+            onKeyDown={handleControlKeyDown}
+            aria-label={isCurrentlyPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
+            className={`w-9 h-9 rounded-full bg-[#f5f2eb] hover:bg-[#e2dfd7] text-[#101114] flex items-center justify-center shadow-md shadow-black/80 transition-all duration-200 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised ${
               isActive
                 ? 'opacity-100 translate-y-0 scale-100'
-                : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hover:scale-105'
+                : 'opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0'
             }`}
           >
             {isCurrentlyPlaying ? (
-              <Pause className="w-5 h-5 fill-black" />
+              <Pause className="w-4 h-4 fill-[#101114]" />
             ) : (
-              <Play className="w-5 h-5 fill-black ml-0.5" />
+              <Play className="w-4 h-4 fill-[#101114] ml-0.5" />
             )}
           </button>
         </div>
 
-        {/* Admin Delete Button */}
-        {role === 'admin' && (
+        {/* Deletion / Removal Trigger */}
+        {canDelete && onDelete && (
           <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete(track._id)
-            }}
-            title="Delete track"
-            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/60 hover:bg-red-600/90 text-zinc-300 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200"
+            type="button"
+            onClick={handleDeleteClick}
+            onKeyDown={handleControlKeyDown}
+            title={`${deleteActionLabel} track`}
+            aria-label={`${deleteActionLabel} ${track.title}`}
+            className="absolute top-2 right-2 z-10 p-1.5 rounded-sm bg-canvas-base/80 hover:bg-status-rejected-bg text-text-secondary hover:text-status-rejected-fg border border-border-rule hover:border-status-rejected-bd backdrop-blur-md opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition duration-150 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
 
-      {/* Metadata */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between gap-1.5">
-          <h3
-            className={`font-semibold text-sm truncate ${
-              isActive ? 'text-emerald-400' : 'text-zinc-100 group-hover:text-white'
-            }`}
-            title={track.title}
-          >
-            {track.title}
-          </h3>
-          {isActive && (
-            <span className="flex items-center gap-0.5 shrink-0" title={isCurrentlyPlaying ? 'Now Playing' : 'Paused'}>
-              <span className={`w-1 h-3 bg-emerald-400 rounded-full ${isCurrentlyPlaying ? 'animate-pulse' : 'opacity-40'}`} />
-              <span className={`w-1 h-4 bg-emerald-400 rounded-full ${isCurrentlyPlaying ? 'animate-pulse delay-75' : 'opacity-40'}`} />
-              <span className={`w-1 h-2 bg-emerald-400 rounded-full ${isCurrentlyPlaying ? 'animate-pulse delay-150' : 'opacity-40'}`} />
-            </span>
-          )}
-        </div>
+      {/* Track Metadata */}
+      <div className="space-y-0.5 min-w-0">
+        <h3
+          className={`font-medium text-sm truncate font-sans ${
+            isActive ? 'text-accent-text' : 'text-text-primary'
+          }`}
+          title={track.title}
+        >
+          {track.title}
+        </h3>
 
-        <p className="text-xs text-zinc-400 truncate">
-          {track.artist?.username || 'Unknown Artist'}
-          {track.genre && <span className="text-zinc-600"> • </span>}
-          {track.genre && <span className="text-zinc-400">{track.genre}</span>}
+        <p className="text-xs text-text-secondary truncate font-sans">
+          {artistName}
+          {track.genre && <span className="text-text-tertiary"> • </span>}
+          {track.genre && <span className="text-text-tertiary">{track.genre}</span>}
         </p>
       </div>
-    </div>
+    </article>
   )
 }
