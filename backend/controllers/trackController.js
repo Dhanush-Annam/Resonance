@@ -162,14 +162,64 @@ exports.rejectTrack = async (req, res) => {
   }
 };
 
-// PUBLIC: All approved tracks are visible
+const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_NUMBER = 10000;
+
+function parsePositiveInteger(value, fallback, max) {
+  if (value === undefined || value === null || value === '') {
+    return fallback;
+  }
+  const num = Number(value);
+  if (!Number.isFinite(num) || !Number.isInteger(num) || num <= 0 || !Number.isSafeInteger(num)) {
+    return fallback;
+  }
+  if (max !== undefined && num > max) {
+    return max;
+  }
+  return num;
+}
+
+// PUBLIC: All approved tracks are visible (with backward-compatible pagination support)
 exports.getApprovedTracks = async (req, res) => {
   try {
-    const tracks = await Track.find({ status: "approved" })
-      .populate("artist", "username")
-      .select("title genre audioUrl coverUrl artist createdAt");
+    const { page, limit } = req.query;
 
-    res.json(tracks);
+    // Backward compatibility: If neither page nor limit is provided, return existing flat array
+    if (page === undefined && limit === undefined) {
+      const tracks = await Track.find({ status: "approved" })
+        .populate("artist", "username")
+        .select("title genre audioUrl coverUrl artist createdAt");
+
+      return res.json(tracks);
+    }
+
+    // Require positive integers; default invalid/missing; enforce bounds
+    const pageNumber = parsePositiveInteger(page, 1, MAX_PAGE_NUMBER);
+    const pageSize = parsePositiveInteger(limit, 10, MAX_PAGE_SIZE);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const query = { status: "approved" };
+
+    const total = await Track.countDocuments(query);
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    // Prevent unsafe or excessively large skip calculations when requested page is beyond total records
+    const tracks =
+      total === 0 || skip >= total
+        ? []
+        : await Track.find(query)
+            .populate("artist", "username")
+            .select("title genre audioUrl coverUrl artist createdAt")
+            .skip(skip)
+            .limit(pageSize)
+            .sort({ createdAt: -1 });
+
+    res.json({
+      results: tracks,
+      total,
+      page: pageNumber,
+      totalPages,
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch tracks" });
   }
