@@ -6,56 +6,56 @@ export default function Sidebar() {
   const { user } = useAuth()
 
   const navClass = ({ isActive }) =>
-    `flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+    `flex items-center gap-3 px-3 py-2 rounded-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-1 focus-visible:ring-offset-canvas-base ${
       isActive
-        ? 'bg-zinc-800/90 text-white font-semibold shadow-sm border border-zinc-700/60'
-        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/60'
+        ? 'bg-surface-raised text-text-primary font-medium border border-border-rule shadow-sm'
+        : 'text-text-secondary border border-transparent hover:text-text-primary hover:bg-surface-raised/60'
     }`
 
   return (
-    <aside className="w-64 bg-zinc-950 border-r border-zinc-800/80 p-4 hidden md:flex flex-col justify-between select-none">
+    <aside className="w-50 lg:w-60 shrink-0 bg-canvas-base border-r border-border-rule p-3 lg:p-4 hidden md:flex flex-col justify-between select-none">
       <div className="space-y-6">
         {/* Main Navigation */}
-        <nav className="space-y-1.5 flex flex-col">
-          <NavLink to="/" className={navClass}>
-            <Home className="w-5 h-5" />
+        <nav className="space-y-1 flex flex-col" aria-label="Main Navigation">
+          <NavLink to="/" end className={navClass}>
+            <Home className="w-4 h-4 shrink-0" />
             <span>Home</span>
           </NavLink>
 
           <NavLink to="/search" className={navClass}>
-            <Search className="w-5 h-5" />
+            <Search className="w-4 h-4 shrink-0" />
             <span>Search</span>
           </NavLink>
 
           <NavLink to="/library" className={navClass}>
-            <Library className="w-5 h-5" />
+            <Library className="w-4 h-4 shrink-0" />
             <span>Your Library</span>
           </NavLink>
         </nav>
 
         {/* Creator / Admin Section */}
         {(user?.role === 'artist' || user?.role === 'admin') && (
-          <div className="pt-4 border-t border-zinc-800/80">
-            <p className="px-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+          <div className="pt-4 border-t border-border-rule">
+            <p className="px-3 text-[11px] font-mono font-medium text-text-tertiary uppercase tracking-wider mb-2">
               Management
             </p>
 
-            <div className="space-y-1.5 flex flex-col">
+            <div className="space-y-1 flex flex-col" aria-label="Management Navigation">
               {user?.role === 'artist' && (
                 <NavLink to="/artist" className={navClass}>
-                  <Mic2 className="w-5 h-5 text-emerald-400" />
+                  <Mic2 className="w-4 h-4 shrink-0 text-accent-text" />
                   <span>Artist Studio</span>
                 </NavLink>
               )}
 
               {user?.role === 'admin' && (
                 <>
-                  <NavLink to="/admin" className={navClass}>
-                    <Shield className="w-5 h-5 text-indigo-400" />
-                    <span>Admin Panel</span>
+                  <NavLink to="/admin" end className={navClass}>
+                    <Shield className="w-4 h-4 shrink-0 text-status-pending-fg" />
+                    <span>Curatorial Desk</span>
                   </NavLink>
                   <NavLink to="/admin/create" className={navClass}>
-                    <PlusCircle className="w-5 h-5 text-emerald-400" />
+                    <PlusCircle className="w-4 h-4 shrink-0 text-status-approved-fg" />
                     <span>Upload Track</span>
                   </NavLink>
                 </>
