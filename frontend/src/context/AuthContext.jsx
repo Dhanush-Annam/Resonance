@@ -1,28 +1,25 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(() => {
+    if (typeof window === 'undefined') return null
+    const token = sessionStorage.getItem('token')
+    const userData = sessionStorage.getItem('user')
 
-useEffect(() => {
-  const token = sessionStorage.getItem('token')
-  const userData = sessionStorage.getItem('user')
-
-  if (token && userData && userData !== 'undefined') {
-    try {
-      setUser(JSON.parse(userData))
-    } catch (error) {
-      console.error('Corrupted auth data, clearing storage')
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('user')
+    if (token && userData && userData !== 'undefined') {
+      try {
+        return JSON.parse(userData)
+      } catch {
+        console.error('Corrupted auth data, clearing storage')
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('user')
+      }
     }
-  }
-
-  setLoading(false)
-}, [])
-
+    return null
+  })
+  const [loading] = useState(false)
 
   const login = (data) => {
     sessionStorage.setItem('token', data.token)
@@ -44,6 +41,7 @@ useEffect(() => {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext)
 }
